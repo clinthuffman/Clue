@@ -1,0 +1,1 @@
+Write-EventLog -LogName 'BFG' -Source 'BFG' -EntryType 'Information' -EventId 9000 -Message 'Blah'
