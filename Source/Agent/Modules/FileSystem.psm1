@@ -103,29 +103,6 @@ function CopyFolderRecusively
     }
 }
 
-Function Remove-HandlesOnFolder
-{
-    param($FolderPath, [string] $Log = '.\Clue.log')
-
-    if (Test-Path -Path $FolderPath)
-    {
-        [string] $sCmd = '.\sysint\Handle.exe "' + $FolderPath + '" /accepteula'
-        Write-Log ('[Remove-HandlesOnFolder] sCmd: ' + $sCmd) -Log $Log
-        $oOutput = Invoke-Expression -Command $sCmd
-        Write-Log ($oOutput) -Log $Log
-        foreach ($sLine in $oOutput)
-        {
-            if ($sLine.Contains('pid') -and $sLine.Contains('powershell.exe'))
-            {
-                $aLine = $sLine.Split(' ',[StringSplitOptions]'RemoveEmptyEntries')
-                [string] $sPid = $aLine[2]
-                Write-Log ('[Remove-HandlesOnFolder] Stop-Process on PID: ' + $sPid) -Log $Log
-                Stop-Process -Id $sPid -Force            
-            }
-        }
-    }
-}
-
 Function New-DataCollectionInProgress
 {
     param([string] $IncidentOutputFolder, [string] $Log = '.\Clue.log')
@@ -244,24 +221,6 @@ Function Test-IsIncidentFolder
         }
     }
     Return $False
-}
-
-Function Stop-HandlesOnFolder
-{
-    param($FolderPath, [string] $Log = '.\Clue.log')
-
-    [string] $sCmd = '.\sysint\Handle "' + $FolderPath + '" /accepteula'
-    $oOutput = Invoke-Expression -Command $sCmd
-    foreach ($sLine in $oOutput)
-    {
-        if ($sLine.Contains('pid') -and $sLine.Contains('powershell.exe'))
-        {
-            $aLine = $sLine.Split(' ',[StringSplitOptions]'RemoveEmptyEntries')
-            [string] $sPid = $aLine[2]
-            Stop-Process -Id $sPid -Force            
-        }
-    }
-    Return $oOutput
 }
 
 function Remove-InstallationFolder

@@ -156,35 +156,6 @@ Function Test-OSCompatibility
     Return $true
 }
 
-Function SysintEulaAgreement
-{
-    param([string] $Log = '.\Clue.log')
-    [int] $iExistingValue = (Get-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\SOFTWARE\Sysinternals\Handle' -ErrorAction SilentlyContinue).EulaAccepted
-    if ($iExistingValue -eq 1)
-    {
-        Return $true
-    }
-    Write-Console '[PopUp] This software requires the use of Windows Sysinternals tools. Please read and agree to the Windows Sysinternals end user license agreement (EULA) before using this software.'
-    Write-MsgBox 'This software requires the use of Windows Sysinternals tools. Please read and agree to the Windows Sysinternals end user license agreement (EULA) before using this software.'
-    Set-Location -Path '.\sysint'
-    $null = Invoke-Expression -Command '.\handle.exe /?'
-    Set-Location -Path $WorkingDirectory
-    [int] $iSysIntEula = (Get-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\SOFTWARE\Sysinternals\Handle' -ErrorAction SilentlyContinue).EulaAccepted
-    if ($iSysIntEula -ne 1)
-    {
-        Write-Log ('Windows Sysinternals EULA DECLINED. Setup of this software cannot continue.') -Log $Log
-        Write-MsgBox 'Windows Sysinternals EULA DECLINED. Setup of this software cannot continue.'
-        Return $false
-        Exit;
-    }
-    else
-    {
-        Write-Console 'Windows Sysinternals EULA AGREED'
-    }
-    Return $true
-    #Set-ItemProperty -Path 'Registry::HKEY_CURRENT_USER\SOFTWARE\Sysinternals\Handle' -ErrorAction SilentlyContinue -Name 'EulaAccepted' -Value $iExistingValue.ToString()
-}
-
 Function Install-WPT
 {
     param([string] $Log = '.\Clue.log')

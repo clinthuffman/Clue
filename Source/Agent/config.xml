@@ -1,7 +1,5 @@
-<Configuration InstallationDirectory="%ProgramData%\Clue" OutputDirectory="" UploadNetworkShare="" EmailReportTo="" WptFolderPath="">
+<Configuration InstallationDirectory="%ProgramData%\Clue" OutputDirectory="" UploadNetworkShare="" EmailReportTo="" WptFolderPath="" Roles="">
   <Rule Type="ScheduledTask" Enabled="True" Name="Invoke-OnWindowsStart" Description="Executes the OnWindowsStart action when Windows start." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Invoke-OnWindowsStart.ps1 -RuleName OnWindowsStart" Trigger="onstart" StartImmediately="true" Priority="low" Actions="OnWindowsStart" />
-  <Rule Type="ScheduledTask" Enabled="False" Name="Test-ProcessHandleCount" Description="Monitors for process handle counts exceeding expert thresholds." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-ProcessHandleCount.ps1" Trigger="5" StartImmediately="false" Priority="low" />
-  <Rule Type="ScheduledTask" Enabled="False" Name="Test-ProcessUserObjects" Description="Monitors for process user object counts exceeding expert thresholds." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-ProcessUserObjects.ps1" Trigger="5" StartImmediately="false" Priority="low" />
   <Rule Type="EventLog" Enabled="False" Name="EventLog-WirelessAuthenticationFailed" Ran="0" RunLimit="4" LogFile="Application" Source="Microsoft-Windows-WLAN-AutoConfig" EventID="12013" EventType="Error" StringInMessage="The authenticator is no longer present" Actions="StartStopNetshTrace,PalCollector,Tasklist,EventLogs,ToolConfig,ToolLog" />
   <Rule Type="EventLog" Enabled="False" Name="EventLog-ClusterNetworkInterfaceFailed" Ran="0" RunLimit="4" LogFile="System" Source="ClusSvc" EventID="1127" EventType="Error" StringInMessage="" Actions="StartStopNetshTrace,PalCollector,Tasklist,EventLogs,ToolConfig,ToolLog" />
   <Rule Type="EventLog" Enabled="False" Name="EventLog-Test" Ran="0" RunLimit="4" LogFile="BFG" Source="BFG" EventID="9000" EventType="Information" StringInMessage="*" Actions="StartStopNetshTrace,PalCollector,Tasklist,EventLogs,ToolConfig,ToolLog" />
@@ -57,17 +55,21 @@
   <Rule Type="ScheduledTask" Enabled="False" Name="Test-IeHang" Ran="0" RunLimit="10" Description="Triggers tracing for Internet Explorer hang conditions." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-IeHang.ps1" Trigger="5" StartImmediately="false" Priority="high" Actions="Tasklist,EtlIeStop,PalCollector,EventLogs,ToolConfig,ToolLog" />
   <Rule Type="Manual" Enabled="True" Name="OnUninstall" Actions="OnUninstall" />  
   <Action Name="PalCollector"><![CDATA[
-    [string] $sCmd = 'logman stop PalCollector'
-    Write-Log ($sCmd) -Log $Log
-    $oOutput = Invoke-Expression -Command $sCmd
-    Write-Log ($oOutput) -Log $Log
-    [string] $sSource = $OutputDirectory + '\PalCollector.blg'
-    Write-Log ('Source: ' + $sSource) -Log $Log
-    Move-Item -Path $sSource -Destination $IncidentOutputFolder
-    Start-Sleep -Seconds 5
-    [string] $sCmd = 'logman start PalCollector'
-    Write-Log ($sCmd) -Log $Log
-    Invoke-Expression -Command $sCmd
+    [int] $DelayInSeconds = 60;
+    Write-Log ('Post incident delay of ' + $DelayInSeconds + ' minutes, then collect counter log...') -Log $Log;
+    Start-Sleep -Seconds $DelayInSeconds;
+    Write-Log ('Post incident delay of ' + $DelayInSeconds + ' minutes, then collect counter log...Done!') -Log $Log;
+    [string] $sCmd = 'logman stop PalCollector';
+    Write-Log ($sCmd) -Log $Log;
+    $oOutput = Invoke-Expression -Command $sCmd;
+    Write-Log ($oOutput) -Log $Log;
+    [string] $sSource = $OutputDirectory + '\PalCollector.blg';
+    Write-Log ('Source: ' + $sSource) -Log $Log;
+    Move-Item -Path $sSource -Destination $IncidentOutputFolder;
+    Start-Sleep -Seconds 5;
+    [string] $sCmd = 'logman start PalCollector';
+    Write-Log ($sCmd) -Log $Log;
+    Invoke-Expression -Command $sCmd;
 	  ]]></Action>
   <Action Name="Tasklist"><![CDATA[
     [string] $sCmd = 'Tasklist /svc /FO CSV > "' + $IncidentOutputFolder + '\Tasklist.csv"'

@@ -3,14 +3,17 @@
 //////////////////////////////////
 - Standalone analysis engine for performance report
 - Upload to UDE workspace.
-- Upload to cloud.
 - Remove blank incident folders.
-- Query "User Object", if close to 10,000, get a user mode dump of the .exe in question.
-- Query "GDI Objects", if close to 10,000, get a user mode dump of the .exe in question.
 
 //////////////////
 // Build notes //
 ////////////////
+
+*v1.0.1
+*Change:* Added a 60 second delay before collecting the PalCollector counter log in order to see post-incident counter log data.
+*Change:* Removed Sysinternals tool references.
+*Change:* Removed Test-ProcessUserObjects.ps1 and Test-ProcessHandleCount.ps1 until a replacement of ProcDump.exe can be made.
+*Update:* Updated the content in Clue Usage Guide and added a CLUE logo.
 
 *v1.0*
 *Change:* Published as open source to GitHub/ClintHuffman/Clue.

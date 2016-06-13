@@ -252,19 +252,6 @@ if ($IsElevated -eq $false)
     Exit;
 }
 
-Set-OverallProgress -Status 'Sysinternals EULA...'
-Write-Console ''
-Write-Console '////////////////////////'
-Write-Console '// Sysinternals EULA //'
-Write-Console '//////////////////////'
-Write-Console ''
-
-if ($IsSilentInstallation -eq $false)
-{
-    SysintEulaAgreement
-    Test-Error -Err $Error -Log $Log
-}
-
 Set-OverallProgress -Status 'Windows Performance Toolkit...'
 Write-Console ''
 Write-Console '////////////////////////////////////////'
@@ -363,8 +350,8 @@ if ($InstallationDirectory -eq '') {$InstallationDirectory = '%ProgramData%\Clue
 $InstallationDirectory = [System.Environment]::ExpandEnvironmentVariables($InstallationDirectory)
 Write-Console 'Done!' -bAddDateTime $false
 Write-Console ("`t" + 'Installation folder: "' + $InstallationDirectory + '"')
-Remove-HandlesOnFolder -FolderPath $InstallationDirectory -Log $Log
-Test-Error -Err $Error -Log $Log
+#Remove-HandlesOnFolder -FolderPath $InstallationDirectory -Log $Log
+#Test-Error -Err $Error -Log $Log
 Write-Console 'Copying content to installation folder...' -bNoNewLine $true
 if (Test-Path -Path $InstallationDirectory) {Remove-Item -Path $InstallationDirectory -Recurse -Force -ErrorAction SilentlyContinue}
 Test-Error -Err $Error -Log $Log
