@@ -513,6 +513,25 @@ Write-Console 'Done!' -bAddDateTime $false
 Set-Location -Path $global:SetupFolder
 Test-Error -Err $Error -Log $Log
 
+#// Disable paging executive for WPR and WPRUI
+[bool] $IsPagingExecutiveDisabed = (Get-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -ErrorAction SilentlyContinue).DisablePagingExecutive
+if ($IsPagingExecutiveDisabed -eq $False)
+{
+    Set-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -Name 'DisablePagingExecutive' -Value 1
+    [bool] $IsPagingExecutiveDisabed = (Get-ItemProperty -Path 'Registry::HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -ErrorAction SilentlyContinue).DisablePagingExecutive
+    if ($IsPagingExecutiveDisabed -eq $True)
+    {
+        if ($IsSilentInstallation -eq $false)
+        {
+            Write-MsgBox -sLine 'A reboot is required. Please reboot this system at the earliest convenience' -Log $Log
+        }
+    }
+    else
+    {
+        Write-Console -sLine 'ERROR: Unable to set DisablePagingExecutive!' -Log $Log
+    }
+}
+
 #// Finalize setup.
 Write-Progress -activity 'Overall progress: ' -status 'Progress: 100%' -Completed -id 1
 Write-Console '[PopUp] Please acknowledge installation has finished...' -bNoNewLine $true

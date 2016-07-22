@@ -4,10 +4,22 @@
 - Standalone analysis engine for performance report
 - Upload to UDE workspace.
 - Remove blank incident folders.
+- Adding/removing fixed disk drives
 
 //////////////////
 // Build notes //
 ////////////////
+
+*v1.0.4*
+*Update:* Added trigger for DPCs as Counter-DpcTimeGt10.
+*Change:* Set RunLimit from 3 to 10 for all rules.
+*Update:* Due to the user of WPR.exe, setup now checks or sets DisablePagingExecutive to 1 (true) and requests a reboot. Ref. https://technet.microsoft.com/en-us/library/cc959492.aspx
+
+*v1.0.3*
+*Change:* Added DPC/ISR details to the Action EtlAppHang per request of Yong Rhee.
+
+*v1.0.2*
+*Fix:* Fixed and non-fatal error when uninstalling CLUE referring to Stop-Handles*.
 
 *v1.0.1
 *Change:* Added a 60 second delay before collecting the PalCollector counter log in order to see post-incident counter log data.

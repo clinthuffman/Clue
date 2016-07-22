@@ -266,11 +266,6 @@ if ($InstallationDirectory -eq '')
     $InstallationDirectory = 'C:\ProgramData\Clue'
 }
 
-Write-Log ('[Stop-HandlesOnFolder]: Start') -Log $Log
-Stop-HandlesOnFolder -FolderPath $InstallationDirectory -Log $Log
-Test-Error -Err $Error -Log $Log
-Write-Log ('[Stop-HandlesOnFolder]: End') -Log $Log
-
 Write-Log ('[Remove-InstallationFolder]: Start') -Log $Log
 Remove-InstallationFolder -FolderPath $InstallationDirectory -Log $Log
 Test-Error -Err $Error -Log $Log

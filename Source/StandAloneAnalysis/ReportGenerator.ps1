@@ -1,20 +1,18 @@
-#requires -Version 2.0
 <#
     .SYNOPSIS
-    Parses the names of ICU zip files, creates a CSV file with the results, and creates charts of the data.
+    Parses the names of Clue zip files in a folder or network share, creates a CSV file with the results, and creates charts of the data.
     .DESCRIPTION
-    Parses the names of ICU zip files and creates a CSV file with the results, and creates charts of the data.
+    Parses the names of Clue zip files and creates a CSV file with the results, and creates charts of the data.
     .EXAMPLE
-    .\04_ReportGenerator.ps1 -Path \\server\ICU
-    This will parse the file name of each zip file under \\server\ICU, creates a CSV file with the results, and creates charts of the data.
+    .\ReportGenerator.ps1 -Path \\server\Clue
+    This will parse the file name of each zip file under \\server\Clue, creates a CSV file with the results, and creates charts of the data.
     .Parameter Path
     This parameters is required and is expected to be a folder path or a path to a network share. Do not put a backslash on the end.
     .Notes
-    Name: 04_ReportGenerator.ps1
+    Name: ReportGenerator.ps1
     Author: Clint Huffman (clinth@microsoft.com)
-    LastEdit: June 11th, 2015
 	Version: 1.0
-    Keywords: PowerShell, ICU
+    Keywords: PowerShell, Clue
 #>
 param([string] $Path)
 
@@ -23,9 +21,26 @@ $global:WorkingDirectory = $PWD.Path
 $global:sDateTimePattern = 'yyyy.MM.dd-HH:mm:ss'
 $global:Charts = @{}
 $global:Tables = @{}
-#$SessionTimeStamp = "$(Get-Date -format yyyyMMdd-HHmmss)"
-#[string] $OutputFolder = '.\' + $SessionTimeStamp
-#[string] $HtmlReportPath = '.\' + $SessionTimeStamp + '.htm'
+
+if ($Path.Length -gt 1)
+{
+    [string] $LastCharacter = $Path.Substring($Path.Length - 1)
+    if ($LastCharacter -eq '\')
+    {
+        [string] $Path = $Path.Substring(0,$Path.Length - 1)
+    }
+}
+else
+{
+    Write-Host ('Path parameter is missing or invalid.')
+    Exit;
+}
+
+if ((Test-Path -Path $Path) -eq $false)
+{
+    Write-Host ('Folder path does not exist: ' + $Path)
+    Exit;
+}
 
 Function IsNumeric
 {
@@ -180,6 +195,66 @@ Function GenerateMsPieChart
 	[Void] $oPALChart.SaveImage($sSaveFilePath, $oPALChartImageFormat)	
 }
 
+function Convert-FileSystemPathToObjectCH
+{
+    param([string] $Path)
+
+    [System.Object] $oFile = New-Object System.Object
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'FilePath' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'Drive' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'FolderPath' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'FileName' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'FileNameNoExtension' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'Extension' -Value ([string] '')
+    Add-Member -InputObject $oFile -MemberType NoteProperty -Name 'Type' -Value ([string] '')
+
+    [string] $oFile.FilePath = $Path
+    if ($Path.IndexOf('.') -ge 0)
+    {
+        #// File
+        [string] $oFile.Type = 'File'
+        [string] $oFile.FilePath = $Path
+    }
+    else
+    {
+        #// Folder
+        [string] $oFile.Type = 'Folder'
+        [string] $oFile.FolderPath = $Path
+    }
+
+    if ($Path.IndexOf('\') -ge 0)
+    {
+        [System.Object[]] $aLine = $Path.Split('\',[StringSplitOptions]'RemoveEmptyEntries')
+        [string] $oFile.Drive = $aLine[0]
+        [int] $u = $aLine.GetUpperBound(0)
+        $oFile.FileName = $aLine[$u]
+        if ($oFile.Type -eq 'File')
+        {
+            [System.Object[]] $aName = $oFile.FileName.Split('.',[StringSplitOptions]'RemoveEmptyEntries')
+            [int] $n = $aName.GetUpperBound(0)
+            [string] $oFile.Extension = $aName[$n]
+            [string] $oFile.FileNameNoExtension = $aName[0]
+            if ($n -gt 1)
+            {
+                [int] $n = $n - 1
+                $aName[1..$n] | ForEach-Object {$oFile.FileNameNoExtension = $oFile.FileNameNoExtension + '.' + $_}
+            }
+            [string] $FolderPath = $aLine[0]
+            if ($u -gt 1)
+            {
+                [int] $u = $u - 1
+                $aLine[1..$u] | ForEach-Object {$FolderPath = $FolderPath + '\' + $_}
+            }
+            [string] $oFile.FolderPath = $FolderPath
+        }
+        else
+        {
+            [string] $oFile.FolderPath = $Path
+        }
+    }
+    Return $oFile
+}
+
 Function WriteHtmlSection
 {
     param($oFilteredCharts, [string] $Title, [string] $HREF, [string] $h)
@@ -193,7 +268,11 @@ Function WriteHtmlSection
             
             foreach ($oChart in $oFilteredCharts)
             {
-                [string] '<IMG SRC="' + $oChart.Value + '"><BR>' >> $h
+                $oFile = Convert-FileSystemPathToObjectCH -Path $h
+                [string] $Pattern = $oFile.FolderPath -replace '\\','\\'
+                [string] $Pattern = $Pattern + '\\'
+                [string] $RelativePath = $oChart.Value -replace $Pattern,''
+                [string] '<IMG SRC="' + $RelativePath + '"><BR>' >> $h
                 if ($($global:Tables.Contains($oChart.Name)) -eq $true)
                 {
                     [string] '<TABLE BORDER=1>' >> $h
@@ -212,7 +291,11 @@ Function WriteHtmlSection
         {
             foreach ($Key in $oFilteredCharts.Keys)
             {
-                [string] '<IMG SRC="' + $oFilteredCharts[$Key] + '"><BR>' >> $h
+                $oFile = Convert-FileSystemPathToObjectCH -Path $h
+                [string] $Pattern = $oFile.FolderPath -replace '\\','\\'
+                [string] $Pattern = $Pattern + '\\'
+                [string] $RelativePath = $oFilteredCharts[$Key] -replace $Pattern,''
+                [string] '<IMG SRC="' + $RelativePath + '"><BR>' >> $h
                 if ($($global:Tables.Contains($Key)) -eq $true)
                 {
                     [string] '<TABLE BORDER=1>' >> $h
@@ -259,9 +342,9 @@ Function WriteHtmlReport
     '</HEAD>' >> $h
     '<BODY LINK="Black" VLINK="Black">' >> $h
     '<TABLE CELLPADDING=10 WIDTH="100%"><TR><TD BGCOLOR="#000000">' >> $h
-    '<FONT COLOR="#FFFFFF" FACE="Tahoma" SIZE="5"><STRONG>' + $global:Title + ' ICU data analysis</STRONG></FONT><BR><BR>' >> $h
+    '<FONT COLOR="#FFFFFF" FACE="Tahoma" SIZE="5"><STRONG>' + $global:Title + ' Clue data analysis</STRONG></FONT><BR><BR>' >> $h
     '<FONT COLOR="#FFFFFF" FACE="Tahoma" SIZE="2"><STRONG>Report Generated at: ' + "$((get-date).tostring($global:sDateTimePattern))" + '</STRONG></FONT>' >> $h
-    '</TD><TD><FONT COLOR="#000000" FACE="Tahoma" SIZE="10">ICU</FONT><FONT COLOR="#000000" FACE="Tahoma" SIZE="5">v1</FONT></FONT>' >> $h
+    '</TD><TD><FONT COLOR="#000000" FACE="Tahoma" SIZE="10">Clue</FONT><FONT COLOR="#000000" FACE="Tahoma" SIZE="5">v1</FONT></FONT>' >> $h
     '</TD></TR></TABLE>' >> $h
     '<BR>' >> $h
 
@@ -352,7 +435,7 @@ Function WriteHtmlReport
 
 }
 
-Function IcuXChart
+Function ClueXChart
 {
     param([string] $PropertyName, [string] $Title, [string] $FileName, [string] $ChartType = 'Bar', [bool] $DistinctIncidents = $true, [string] $SortBy = 'Count', [string] $Sort = 'DESC', [bool] $AddTable = $true)
 
@@ -446,7 +529,7 @@ Function IcuXChart
     [void] $global:Charts.Add($Title,$sOutputFilePath)
 }
 
-Function IcuXByChart
+Function ClueXByChart
 {
     param([string] $PropertyName, [string] $ByPropertyName, [string] $ByPropertyValue, [string] $Title, [string] $FileName, [string] $ChartType = 'Bar', [bool] $DistinctIncidents = $true, [bool] $AddTable = $true)
     $alSeries = New-Object System.Collections.ArrayList
@@ -521,9 +604,9 @@ Function ChartPropertyByProperty
     $oUniqueObjects = $aFolderObjects | Select $ByProperty -Unique
     foreach ($oObject in $oUniqueObjects)
     {
-        [string] $TempTitle = 'ICU Incident ' + $Property  + '(s) of ' + $ByProperty + ' ' + $oObject.$($ByProperty)
+        [string] $TempTitle = 'Clue Incident ' + $Property  + '(s) of ' + $ByProperty + ' ' + $oObject.$($ByProperty)
         [string] $TempFileName = $Property + 'Of' + $oObject.$($ByProperty)
-        IcuXByChart -PropertyName $Property -ByPropertyName $ByProperty -ByPropertyValue $oObject.$($ByProperty) -Title $TempTitle -FileName $TempFileName -DistinctIncidents $UseDistinctIncidents -AddTable $AddTable
+        ClueXByChart -PropertyName $Property -ByPropertyName $ByProperty -ByPropertyValue $oObject.$($ByProperty) -Title $TempTitle -FileName $TempFileName -DistinctIncidents $UseDistinctIncidents -AddTable $AddTable
     }
 }
 
@@ -544,7 +627,6 @@ foreach ($oFolderOrFile in $IncidentItems)
     {
         [void] $alFolderObjects.Add($oFolderOrFile.Name)
         [string] $sLine = $oFolderOrFile.Name
-        #$sLine
 
         If ($(IsNumeric -Value $sLine.Substring(0,8)))
         {
@@ -631,6 +713,7 @@ foreach ($oFolderOrFile in $IncidentItems)
             }
             Else
             {
+                        <#
                         if ($sCause.Contains('+'))
                         {
                             $aSubCause = @($sCause.Split('+',[StringSplitOptions]'RemoveEmptyEntries'))
@@ -655,6 +738,7 @@ foreach ($oFolderOrFile in $IncidentItems)
                         }
                         else
                         {
+                        #>
                             $oNewObject = New-Object System.Object
                             Add-Member -InputObject $oNewObject -MemberType NoteProperty -Name 'DateTime' -Value $([datetime] $dtDateTime)
                             Add-Member -InputObject $oNewObject -MemberType NoteProperty -Name 'WeekOfYear' -Value $([int] $iWeekOfYear)
@@ -665,7 +749,7 @@ foreach ($oFolderOrFile in $IncidentItems)
                             Add-Member -InputObject $oNewObject -MemberType NoteProperty -Name 'Rule' -Value $([string] $sRule)
                             Add-Member -InputObject $oNewObject -MemberType NoteProperty -Name 'Cause' -Value $([string] $sCause)
                             $aFolderObjects += $oNewObject
-                        }
+                        #}
             }
         }
     }
@@ -678,7 +762,7 @@ if([Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms.DataVisualiz
     #// ... then the Microsoft Chart Controls are not installed.
     [void][reflection.assembly]::Load("System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
     [void][System.Windows.Forms.MessageBox]::Show("Microsoft Chart Controls for Microsoft .NET 3.5 Framework is required", "Microsoft Chart Controls Required")
-    #Open the URL
+    #// Open the URL
     WriteErrorToHtmlAndShow -sError 'Microsoft Chart Controls for Microsoft .NET 3.5 Framework is required. Download and install for free at http://www.microsoft.com/downloads/en/details.aspx?familyid=130F7986-BF49-4FE5-9CA8-910AE6EA442C&displaylang=en'
     [System.Diagnostics.Process]::Start("http://www.microsoft.com/downloads/en/details.aspx?familyid=130F7986-BF49-4FE5-9CA8-910AE6EA442C&displaylang=en");
     Break;
@@ -690,20 +774,18 @@ $aDateTimes = $aFolderObjects | Select DateTime | Sort-Object DateTime
 [string] $sLastDt = $aDateTimes[$u].DateTime.ToString('yyyyMMdd')
 [string] $global:Title = $sFirstDt + '-' + $sLastDt
 [string] $global:sResourceFolderPath = $global:WorkingDirectory + '\' + $global:Title
-
-[string] $TempPath = $global:sResourceFolderPath + '\IncidentFolderStats.csv'
-$aFolderObjects | Export-Csv -Path $TempPath -NoTypeInformation
-
 if ($(Test-Path -Path $global:sResourceFolderPath) -eq $false)
 {
     New-Item -Path $global:sResourceFolderPath -ItemType Directory -Force
 }
+[string] $TempPath = $global:sResourceFolderPath + '\IncidentFolderStats.csv'
+$aFolderObjects | Export-Csv -Path $TempPath -NoTypeInformation
 
 #// Overall/All single charts by X
-IcuXChart -PropertyName 'WeekOfYear' -Title 'All ICU Incidents by WeekOfYear' -FileName 'AllWeekOfYear' -DistinctIncidents $True -ChartType 'Bar' -SortBy 'Name' -Sort 'NONE'
-IcuXChart -PropertyName 'Rule' -Title 'All ICU Incidents by Trigger/Rule' -FileName 'RuleCount' -ChartType 'Bar' -DistinctIncidents $True -SortBy 'Count' -Sort 'ASC' -AddTable $True
-IcuXChart -PropertyName 'Computer' -Title 'All ICU Incidents by Computer' -FileName 'ComputerCount' -ChartType 'Bar' -DistinctIncidents $True -SortBy 'Count' -Sort 'ASC' -AddTable $True
-IcuXChart -PropertyName 'Cause' -Title 'All ICU Incidents by Cause' -FileName 'CauseCount' -ChartType 'Bar' -DistinctIncidents $false -SortBy 'Count' -Sort 'ASC' -AddTable $True
+ClueXChart -PropertyName 'WeekOfYear' -Title 'All Clue Incidents by WeekOfYear' -FileName 'AllWeekOfYear' -DistinctIncidents $True -ChartType 'Bar' -SortBy 'Name' -Sort 'NONE'
+ClueXChart -PropertyName 'Rule' -Title 'All Clue Incidents by Trigger/Rule' -FileName 'RuleCount' -ChartType 'Bar' -DistinctIncidents $True -SortBy 'Count' -Sort 'ASC' -AddTable $True
+ClueXChart -PropertyName 'Computer' -Title 'All Clue Incidents by Computer' -FileName 'ComputerCount' -ChartType 'Bar' -DistinctIncidents $True -SortBy 'Count' -Sort 'ASC' -AddTable $True
+ClueXChart -PropertyName 'Cause' -Title 'All Clue Incidents by Cause' -FileName 'CauseCount' -ChartType 'Bar' -DistinctIncidents $false -SortBy 'Count' -Sort 'ASC' -AddTable $True
 
 #// Breakout charts Causes of each rule/trigger
 ChartPropertyByProperty -Property 'Cause' -ByProperty 'Rule' -UseDistinctIncidents $false -AddTable $true
@@ -719,6 +801,6 @@ ChartPropertyByProperty -Property 'WeekOfYear' -ByProperty 'Computer' -UseDistin
 
 $global:charts = @($global:charts.GetEnumerator() | Sort-Object Name)
 
-[string] $global:sHtmlReportPath = $global:WorkingDirectory + '\' + $global:Title + ' ICU data analysis.htm'
+[string] $global:sHtmlReportPath = $global:WorkingDirectory + '\' + $global:Title + ' Clue data analysis.htm'
 
 WriteHtmlReport -Path $global:sHtmlReportPath
