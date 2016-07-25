@@ -11,7 +11,7 @@
   </Rule>
   <Rule Type="Counter" Enabled="True" Name="Counter-MemoryFreeSystemPTEsLt50K" Ran="0" RunLimit="10" CounterPath="\Memory\Free System Page Table Entries" SampleInterval="1" MaxSamples="3" Operator="lt" Threshold="50000" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="Counter" Enabled="True" Name="Counter-ProcessorTimeGt90" Ran="0" RunLimit="10" CounterPath="\Processor Information(*)\% Processor Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="90" Actions="Tasklist,EtlCpuSampled,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-DpcTimeGt10" Ran="0" RunLimit="10" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="10" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="False" Name="Counter-DpcTimeGt10" Ran="0" RunLimit="10" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="10" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="Counter" Enabled="True" Name="Counter-PhysicalMemoryLt10Percent" Ran="0" RunLimit="10" CounterPath="\Memory\Available MBytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="lt" Threshold="500" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
       [double] $number = 0
