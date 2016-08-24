@@ -34,6 +34,16 @@ if ($Force -eq $true)
     Exit;
 }
 
+[string] $DesktopBatchFile = $(Get-Content env:PUBLIC) + '\Desktop\ClueUserInitiated.bat'
+Write-Log ('Desktop batch file: ' + $DesktopBatchFile) -Log $Log
+Add-content -Path $DesktopBatchFile -value ('@echo off') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo UserInitiated >> ' + $sTextFilePath) -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo =========== USER INITIATED ===================') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo Dumping processes... This may take a minute or two...') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo You may close this command prompt at any time.') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo ==============================================') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('pause') -Encoding Ascii
+
 [bool] $IsModified = $false
 
 #///////////

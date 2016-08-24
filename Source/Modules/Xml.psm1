@@ -254,6 +254,9 @@ Function Stop-Wpr
 {
     param([string] $WptFolderPath, [string] $EtlFilePath = '', [string] $Log = '.\Clue.log')
     $OriginalDirectory = (PWD).Path
+    Write-Log ('[Stop-Wpr] WptFolderPath: ' + $WptFolderPath) -Log $Log
+    Write-Log ('[Stop-Wpr] EtlFilePath: ' + $EtlFilePath) -Log $Log
+    Write-Log ('[Stop-Wpr] OriginalDirectory: ' + $OriginalDirectory) -Log $Log
     if ($EtlFilePath -eq '')
     {
         [string] $sCmd = '.\wpr.exe -stop DeleteMe.etl'
@@ -264,7 +267,8 @@ Function Stop-Wpr
     }
     Write-Log ('[Stop-Wpr] sCmd: ' + $sCmd) -Log $Log
     Set-Location -Path $WptFolderPath
-    Invoke-Expression -Command $sCmd
+    $Output = Invoke-Expression -Command $sCmd
+    Write-Log ($Output) -Log $Log
     Test-Error -Err $Error -Log $Log
     if (Test-Path -Path 'DeleteMe.etl')
     {Remove-Item -Path 'DeleteMe.etl' -Force -ErrorAction SilentlyContinue}

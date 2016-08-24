@@ -377,24 +377,34 @@ Function Get-ClintOsArchitecture
     {
         Return $oOs.OSArchitecture
     } else {Return 0}
-    <#
-    [int] $iArch = $oOs.OSArchitecture
-    If ([double]::TryParse($iArch, [REF] 0.0)) #// Is numeric?
+}
+
+Function Start-ProcDumpOnProcessNameCH
+{
+    param([string] $ProcessName, [string] $OutputFolder = 'C:\ClueOutput', [string] $Log)
+    Write-Log ('[Start-ProcDumpOnProcessNameCH] ProcessName: ' + $ProcessName) -Log $Log
+    Write-Log ('[Start-ProcDumpOnProcessNameCH] OutputFolder: ' + $OutputFolder) -Log $Log
+    Write-Log ('[Start-ProcDumpOnProcessNameCH] Log: ' + $Log) -Log $Log
+    $ProcessName = $ProcessName -replace '.exe',''
+    $oProcesses = Get-Process | Where-Object {$_.Name -eq $ProcessName}
+    ForEach ($oProcess in $oProcesses)
     {
-        [int] $iArch = $iArch #// ensure it is converted to an int.
-        switch ($iArch)
-        {
-            0 {[string] $sArch = 'x86'}
-            1 {[string] $sArch = 'MIPS'}
-            2 {[string] $sArch = 'Alpha'}
-            3 {[string] $sArch = 'PowerPC'}
-            5 {[string] $sArch = 'ARM'}
-            6 {[string] $sArch = 'ia64'}
-            9 {[string] $sArch = 'x64'}
-            default {[string] $sArch = 'unknown'}
-            #// enumeration based on https://msdn.microsoft.com/en-us/library/windows/desktop/aa394373(v=vs.85).aspx            
-        }
+        [string] $sCmd = '.\sysint\procdump.exe -ma ' + $oProcess.Id + ' "' + $OutputFolder + '\' + $ProcessName + '-' + $oProcess.Id + '.dmp" -accepteula'
+        Write-Log ('[Start-ProcDumpOnProcessNameCH] sCmd: ' + $sCmd) -Log $Log
+        $Output = Invoke-Expression -Command $sCmd
+        Write-Log ($Output) -Log $Log
+        Test-Error -Err $Error -Log $Log
     }
-    Return $sArch
-    #>
+}
+
+Function Add-WprTraceMarkerCH
+{
+    param([string] $Name ,[string] $Log)
+    Write-Log ('[Add-WprTraceMarkerCH] Name: ' + $Name) -Log $Log
+    Write-Log ('[Add-WprTraceMarkerCH] Log: ' + $Log) -Log $Log
+    [string] $sCmd = 'wpr.exe -marker "' + $Name + '"'
+    Write-Log ('[Add-WprTraceMarkerCH] sCmd: ' + $sCmd) -Log $Log
+    $Output = Invoke-Expression -Command $sCmd -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+    Write-Log ($Output) -Log $Log
+    Test-Error -Err $Error -Log $Log
 }

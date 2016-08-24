@@ -3,5 +3,4 @@
 mkdir %temp%\ClueSetup
 robocopy %~dp0 %temp%\ClueSetup /S
 Powershell.exe -ExecutionPolicy ByPass -NoProfile -File %temp%\ClueSetup\_setup.ps1
-copy %temp%\ClueSetup\InternetExplorerIsHung.bat %public%\Desktop
 rmdir /S /Q %temp%\ClueSetup

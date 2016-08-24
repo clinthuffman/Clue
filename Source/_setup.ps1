@@ -142,6 +142,35 @@ function Get-OutputDirectory
     Return $OutputDirectory
 }
 
+function Download-SysInternalsTool
+{
+    param([string] $FileName, [string] $DownloadToFolderPath)
+    
+    $webclient = New-Object System.Net.WebClient
+    [string] $FilePath = $DownloadToFolderPath + '\' + $FileName
+        
+    if (Test-Path -Path $FilePath)
+    {
+        Write-Console ($FilePath + ' is already downloaded.')
+        Return $true
+    }
+    else
+    {   
+        [string] $url = 'http://live.sysinternals.com/' + $FileName
+        Write-Console ('Downloading ' + $url + '...')
+        $webclient.DownloadFile($url,$FilePath)
+    }
+
+    if (Test-Path -Path $FilePath)
+    {
+        Write-Console 'Downloaded!'
+    }
+    else
+    {
+        Write-Console 'Unable to download ' + $FileName + '. Download this SysInternals file manually from ' + $url + ' and place it in the sysint folder under the CLUE installation folder. Otherwise, the CLUE tool might not function properly.'
+    }
+}
+
 function Get-UploadNetworkShare
 {
     param($XmlConfig, [string] $Log = $Log)
@@ -337,7 +366,16 @@ if ($XmlConfig -eq $null)
     Write-MsgBox 'Unable to get the XML configuration. Setup has failed.'
 }
 
-Set-OverallProgress -Status 'Installation folder..'
+Set-OverallProgress -Status 'Downloading Sysinternals tools...'
+Write-Console ''
+Write-Console '//////////////////////////////////'
+Write-Console '// Download Sysinternals tools //'
+Write-Console '////////////////////////////////'
+Write-Console ''
+[string] $DownloadFolderPath = (pwd).Path + '\sysint' 
+Download-SysInternalsTool -FileName 'procdump.exe' -DownloadToFolderPath $DownloadFolderPath
+
+Set-OverallProgress -Status 'Installation folder...'
 Write-Console ''
 Write-Console '//////////////////////////'
 Write-Console '// Installation folder //'

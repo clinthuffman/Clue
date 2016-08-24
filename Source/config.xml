@@ -1,57 +1,57 @@
 <Configuration InstallationDirectory="%ProgramData%\Clue" OutputDirectory="" UploadNetworkShare="" EmailReportTo="" WptFolderPath="">
   <Rule Type="ScheduledTask" Enabled="True" Name="Invoke-OnWindowsStart" Description="Executes the OnWindowsStart action when Windows start." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Invoke-OnWindowsStart.ps1 -RuleName OnWindowsStart" Trigger="onstart" StartImmediately="true" Priority="low" Actions="OnWindowsStart" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-DiskLatencyGt35ms" Ran="0" RunLimit="10" CounterPath="\LogicalDisk(*)\Avg. Disk Sec/Transfer" Exclude="_Total,HarddiskVolume" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="0.035" Actions="Tasklist,EtlDisk,PoolTags,PalCollector,ToolConfig,ToolLog">
+  <Rule Type="Counter" Enabled="True" Name="Counter-DiskLatencyGt35ms" Ran="0" RunLimit="3" CounterPath="\LogicalDisk(*)\Avg. Disk Sec/Transfer" Exclude="_Total,HarddiskVolume" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="0.035" Actions="Tasklist,EtlDisk,PoolTags,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
-      $WmiDisks = Get-WmiObject -Query 'SELECT * FROM Win32_LogicalDisk WHERE DriveType <> 3'
+      $WmiDisks = Get-WmiObject -Query 'SELECT * FROM Win32_LogicalDisk WHERE DriveType <> 3';
       foreach ($oDisk in $WmiDisks)
       {
           $Exclude = $Exclude + ',' + $oDisk.Name
-      }     
+      };
       ]]></CODE>
   </Rule>
-  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryFreeSystemPTEsLt50K" Ran="0" RunLimit="10" CounterPath="\Memory\Free System Page Table Entries" SampleInterval="1" MaxSamples="3" Operator="lt" Threshold="50000" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-ProcessorTimeGt90" Ran="0" RunLimit="10" CounterPath="\Processor Information(*)\% Processor Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="90" Actions="Tasklist,EtlCpuSampled,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="False" Name="Counter-DpcTimeGt10" Ran="0" RunLimit="10" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="10" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-PhysicalMemoryLt10Percent" Ran="0" RunLimit="10" CounterPath="\Memory\Available MBytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="lt" Threshold="500" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
+  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryFreeSystemPTEsLt50K" Ran="0" RunLimit="3" CounterPath="\Memory\Free System Page Table Entries" SampleInterval="1" MaxSamples="3" Operator="lt" Threshold="50000" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-ProcessorTimeGt90" Ran="0" RunLimit="3" CounterPath="\Processor Information(*)\% Processor Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="90" Actions="Tasklist,EtlCpuSampled,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-DpcTimeGt30" Ran="0" RunLimit="3" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="30" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-PhysicalMemoryLt10Percent" Ran="0" RunLimit="3" CounterPath="\Memory\Available MBytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="lt" Threshold="500" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
-      [double] $number = 0
-      $Temp = [Math]::Round($(gwmi Win32_ComputerSystem | % {($_.TotalPhysicalMemory * 0.10) / 1MB}),0)
-      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number)
+      [double] $number = 0;
+      $Temp = [Math]::Round($(gwmi Win32_ComputerSystem | % {($_.TotalPhysicalMemory * 0.10) / 1MB}),0);
+      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number);
       if ($IsNumeric -eq $True)
       {
         $Threshold = $Temp
-      }
+      };
       ]]></CODE>
   </Rule>
-  <Rule Type="Counter" Enabled="True" Name="Counter-CommittedMemoryInUseGt90Percent" Ran="0" RunLimit="10" CounterPath="\Memory\% Committed Bytes In Use" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="90" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryPoolPagedGt10Percent" Ran="0" RunLimit="10" CounterPath="\Memory\Pool Paged Bytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="1073741824" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
+  <Rule Type="Counter" Enabled="True" Name="Counter-CommittedMemoryInUseGt90Percent" Ran="0" RunLimit="3" CounterPath="\Memory\% Committed Bytes In Use" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="90" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryPoolPagedGt10Percent" Ran="0" RunLimit="3" CounterPath="\Memory\Pool Paged Bytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="1073741824" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
-      [double] $number = 0
-      $Temp = ((Get-WmiObject -Query 'SELECT TotalVirtualMemorySize FROM Win32_OperatingSystem').TotalVirtualMemorySize * 1KB) * 0.10
-      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number)
+      [double] $number = 0;
+      $Temp = ((Get-WmiObject -Query 'SELECT TotalVirtualMemorySize FROM Win32_OperatingSystem').TotalVirtualMemorySize * 1KB) * 0.10;
+      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number);
       if ($IsNumeric -eq $True)
       {
         $Threshold = $Temp
-      }
+      };
       ]]></CODE>
   </Rule>
-  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryPoolNonPagedGt10Percent" Ran="0" RunLimit="10" CounterPath="\Memory\Pool NonPaged Bytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="1073741824" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
+  <Rule Type="Counter" Enabled="True" Name="Counter-MemoryPoolNonPagedGt10Percent" Ran="0" RunLimit="3" CounterPath="\Memory\Pool NonPaged Bytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="gt" Threshold="1073741824" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
-      [double] $number = 0
-      $Temp = (Get-WmiObject -Query 'SELECT TotalPhysicalMemory FROM Win32_ComputerSystem').TotalPhysicalMemory * 0.10
-      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number)
+      [double] $number = 0;
+      $Temp = (Get-WmiObject -Query 'SELECT TotalPhysicalMemory FROM Win32_ComputerSystem').TotalPhysicalMemory * 0.10;
+      [bool] $IsNumeric = [double]::TryParse($Temp, [REF] $number);
       if ($IsNumeric -eq $True)
       {
         $Threshold = $Temp
-      }
+      };
       ]]></CODE>
   </Rule>
-  <Rule Type="ScheduledTask" Enabled="True" Name="Test-ProcessAddressSpace" Ran="0" RunLimit="10" Description="Tests if any process is low on virtual address space." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-ProcessAddressSpace.ps1" Trigger="5" StartImmediately="true" Priority="low" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="ScheduledTask" Enabled="True" Name="Test-ProcessAddressSpace" Ran="0" RunLimit="3" Description="Tests if any process is low on virtual address space." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-ProcessAddressSpace.ps1" Trigger="5" StartImmediately="false" Priority="low" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="ScheduledTask" Enabled="True" Name="Invoke-Rule" Description="Starts data collection of a rule." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Invoke-Rule.ps1 `$(Arg0)" Trigger="manual" StartImmediately="false" Priority="high" />
   <Rule Type="ScheduledTask" Enabled="True" Name="Test-UserInitiated" Description="Monitors %public%\Documents\ClueUserInitiated.txt" Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-UserInitiated.ps1" Trigger="5" StartImmediately="true" Priority="high" Actions="Tasklist,EtlAppHang,PoolTags,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="ScheduledTask" Enabled="True" Name="IncidentFolderManagement" Description="Manages and uploads incident folders." Path="powershell" Arguments="-ExecutionPolicy ByPass -File IncidentFolderManagement.ps1" Trigger="30" StartImmediately="false" Priority="low" />
   <Rule Type="ScheduledTask" Enabled="True" Name="Config-Manager" Description="Manages and updates config.xml." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Config-Manager.ps1" Trigger="30" StartImmediately="true" Priority="high" />
-  <Rule Type="ScheduledTask" Enabled="False" Name="Test-IeHang" Ran="0" RunLimit="10" Description="Triggers tracing for Internet Explorer hang conditions." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-IeHang.ps1" Trigger="5" StartImmediately="false" Priority="high" Actions="Tasklist,EtlIeStop,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="ScheduledTask" Enabled="True" Name="Start-ProcessDump" Description="Triggers a user-initiated process dump." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Start-ProcessDump.ps1 -ProcessName iexplore" Trigger="5" StartImmediately="true" Priority="high" />
   <Rule Type="Manual" Enabled="True" Name="OnUninstall" Actions="OnUninstall" />  
   <Action Name="PalCollector"><![CDATA[
     [int] $DelayInSeconds = 60;
@@ -71,62 +71,62 @@
     Invoke-Expression -Command $sCmd;
 	  ]]></Action>
   <Action Name="Tasklist"><![CDATA[
-    [string] $sCmd = 'Tasklist /svc /FO CSV > "' + $IncidentOutputFolder + '\Tasklist.csv"'
-    Write-Log ($sCmd) -Log $Log
-    $oOutput = Invoke-Expression -Command $sCmd    
-    Write-Log ($oOutput) -Log $Log 
+    [string] $sCmd = 'Tasklist /svc /FO CSV > "' + $IncidentOutputFolder + '\Tasklist.csv"';
+    Write-Log ($sCmd) -Log $Log;
+    $oOutput = Invoke-Expression -Command $sCmd;
+    Write-Log ($oOutput) -Log $Log;
 	  ]]></Action>
   <Action Name="OnWindowsStart">
     <!--All Powershell code within this Action node will execute when Windows starts.--><![CDATA[
 	  ]]></Action>
   <Action Name="StartStopNetshTrace"><![CDATA[
-    [string] $sCmd = 'netsh trace show status'
-    Write-Log ('[StartStopNetshTrace] ' + $sCmd) -Log $Log
-    [string[]] $aOutput = @(Invoke-Expression -Command $sCmd)
-    Write-Log ($aOutput) -Log $Log
+    [string] $sCmd = 'netsh trace show status';
+    Write-Log ('[StartStopNetshTrace] ' + $sCmd) -Log $Log;
+    [string[]] $aOutput = @(Invoke-Expression -Command $sCmd);
+    Write-Log ($aOutput) -Log $Log;
     if ($aOutput[0].Contains('no trace session'))
     {
-        #// Start netsh trace
-        [string] $sCmd = 'netsh trace start capture=yes tracefile=' + $OutputDirectory + '\NetTrace.etl maxsize=250 filemode=circular overwrite=yes'
-        Write-Log ('[StartStopNetshTrace] ' + $sCmd) -Log $Log
-        $aOutput2 = Invoke-Expression -Command $sCmd
-        [string] $NetworkTraceStartedFilePath = ($IncidentOutputFolder + '\_NETSH_TRACE_STARTED.txt') 
-        'The next time this event is triggered, the netsh trace will be stopped.' > $NetworkTraceStartedFilePath
-        Write-Log ($aOutput2) -Log $Log
+        #// Start netsh trace;
+        [string] $sCmd = 'netsh trace start capture=yes tracefile=' + $OutputDirectory + '\NetTrace.etl maxsize=250 filemode=circular overwrite=yes';
+        Write-Log ('[StartStopNetshTrace] ' + $sCmd) -Log $Log;
+        $aOutput2 = Invoke-Expression -Command $sCmd;
+        [string] $NetworkTraceStartedFilePath = ($IncidentOutputFolder + '\_NETSH_TRACE_STARTED.txt');
+        'The next time this event is triggered, the netsh trace will be stopped.' > $NetworkTraceStartedFilePath;
+        Write-Log ($aOutput2) -Log $Log;
     }
     else
     {
-        #// Stop any existing netsh traces
-        [string] $sCmd = 'netsh trace stop'
-        Write-Host ('[StartStopNetshTrace] ' + $sCmd)
-        $aOutput2 = Invoke-Expression -Command $sCmd
-        Write-Log ($aOutput2) -Log $Log
-        Move-Item -Path $OutputDirectory\NetTrace.* -Destination $IncidentOutputFolder -ErrorAction Continue
-    }
+        #// Stop any existing netsh traces;
+        [string] $sCmd = 'netsh trace stop';
+        Write-Log ('[StartStopNetshTrace] ' + $sCmd) -Log $Log;
+        $aOutput2 = Invoke-Expression -Command $sCmd;
+        Write-Log ($aOutput2) -Log $Log;
+        Move-Item -Path $OutputDirectory\NetTrace.* -Destination $IncidentOutputFolder -ErrorAction Continue;
+    };
     ]]></Action>
   <Action Name="StopNetshTrace"><![CDATA[
-    #// Stop any existing netsh traces
-    [string] $sCmd = 'netsh trace stop'
-    Write-Log ($sCmd) -Log $Log
-    Invoke-Expression -Command $sCmd
-    Move-Item -Path $OutputDirectory\NetTrace.* -Destination $IncidentOutputFolder -ErrorAction Continue
+    #// Stop any existing netsh traces;
+    [string] $sCmd = 'netsh trace stop';
+    Write-Log ($sCmd) -Log $Log;
+    Invoke-Expression -Command $sCmd;
+    Move-Item -Path $OutputDirectory\NetTrace.* -Destination $IncidentOutputFolder -ErrorAction Continue;
     ]]></Action>
   <Action Name="PoolTags"><![CDATA[
-    [string] $sFilePathToPoolSnapLog = New-PoolmonLog -OutputDirectory $IncidentOutputFolder
-    [string] $sTopPoolTags = Get-TopPoolTags -OutputDirectory $IncidentOutputFolder    
-    [string] $sCsvTagsToDriverFilesFilePath = $IncidentOutputFolder + '\TagsToDriverFiles.csv'
-    Get-TagsToDrivers -Tags $sTopPoolTags | Export-Csv -Path $sCsvTagsToDriverFilesFilePath -NoTypeInformation
+    [string] $sFilePathToPoolSnapLog = New-PoolmonLog -OutputDirectory $IncidentOutputFolder -Log $Log;
+    [string] $sTopPoolTags = Get-TopPoolTags -OutputDirectory $IncidentOutputFolder -Log $Log;
+    [string] $sCsvTagsToDriverFilesFilePath = $IncidentOutputFolder + '\TagsToDriverFiles.csv';
+    Get-TagsToDrivers -Tags $sTopPoolTags -Log $Log | Export-Csv -Path $sCsvTagsToDriverFilesFilePath -NoTypeInformation;
     ]]></Action>
   <Action Name="EtlMemory"><![CDATA[
-    #// Pool tags
-    [string] $sFilePathToPoolSnapLog = New-PoolmonLog -OutputDirectory $OutputDirectory
-    Copy-Item -Path $sFilePathToPoolSnapLog -Destination $IncidentOutputFolder
-    [string] $sTopPoolTags = Get-TopPoolTags -OutputDirectory $OutputDirectory
-    Write-Log ('sTopPoolTags: ' + $sTopPoolTags) -Log $Log
-    [string] $sCsvTagsToDriverFilesFilePath = $IncidentOutputFolder + '\TagsToDriverFiles.csv'
-    Get-TagsToDrivers -Tags $sTopPoolTags | Export-Csv -Path $sCsvTagsToDriverFilesFilePath -NoTypeInformation
+    #// Pool tags;
+    [string] $sFilePathToPoolSnapLog = New-PoolmonLog -OutputDirectory $OutputDirectory -Log $Log;
+    Copy-Item -Path $sFilePathToPoolSnapLog -Destination $IncidentOutputFolder;
+    [string] $sTopPoolTags = Get-TopPoolTags -OutputDirectory $OutputDirectory -Log $Log;
+    Write-Log ('sTopPoolTags: ' + $sTopPoolTags) -Log $Log;
+    [string] $sCsvTagsToDriverFilesFilePath = $IncidentOutputFolder + '\TagsToDriverFiles.csv';
+    Get-TagsToDrivers -Tags $sTopPoolTags -Log $Log | Export-Csv -Path $sCsvTagsToDriverFilesFilePath -NoTypeInformation;
  
-    #// Start xperf trace
+    #// Start xperf trace;
     If ($sTopPoolTags -ne '')
     {
       [string] $sXperfArguments = '-on LOADER+VIRT_ALLOC+POOL+PROC_THREAD -stackwalk PoolAlloc+PoolAllocSession+VirtualAlloc -pooltag ' + $sTopPoolTags + ' -minbuffers 256 -maxbuffers 256 -maxfile 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl'
@@ -135,40 +135,40 @@
     {
       [string] $sXperfArguments = '-on LOADER+VIRT_ALLOC+POOL+PROC_THREAD -stackwalk PoolAlloc+PoolAllocSession+VirtualAlloc -minbuffers 256 -maxbuffers 256 -maxfile 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl'
     }
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
     
-    #// Wait while xperf is collecting
-    Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log
-    [int] $iSleepTimeInSeconds = 60
-    Start-Sleep -Seconds $iSleepTimeInSeconds
-    Write-Log ('Done sleeping') -Log $Log
+    #// Wait while xperf is collecting;
+    Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
+    [int] $iSleepTimeInSeconds = 60;
+    Start-Sleep -Seconds $iSleepTimeInSeconds;
+    Write-Log ('Done sleeping') -Log $Log;
     
-    #// Stop xperf
-    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"'
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath    
+    #// Stop xperf;
+    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
 	  ]]></Action>
   <Action Name="EtlAppHang"><![CDATA[
-    [string] $sXperfArguments = '-on PROFILE+PROC_THREAD+LOADER+CSWITCH+DISK_IO_INIT+FileIO+DPC+INTERRUPT -stackWalk Profile+CSWITCH+DiskReadInit+DiskWriteInit+DiskFlushInit -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl'
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments
+    [string] $sXperfArguments = '-on PROFILE+PROC_THREAD+LOADER+CSWITCH+DISK_IO_INIT+FileIO+DPC+INTERRUPT -stackWalk Profile+CSWITCH+DiskReadInit+DiskWriteInit+DiskFlushInit -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl';
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
       
-    #// Wait while xperf is collecting
-    Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log
-    [int] $iSleepTimeInSeconds = 60
-    Start-Sleep -Seconds $iSleepTimeInSeconds
-    Write-Log ('Done sleeping') -Log $Log
+    #// Wait while xperf is collecting;
+    Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
+    [int] $iSleepTimeInSeconds = 60;
+    Start-Sleep -Seconds $iSleepTimeInSeconds;
+    Write-Log ('Done sleeping') -Log $Log;
     
-    #// Stop xperf
-    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"'
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath
+    #// Stop xperf;
+    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
     
-    #// Copy UserNote
-    [string] $sUserInitiatedFilePath = $(Get-Content env:PUBLIC) + '\Documents' + '\ClueUserInitiated.txt'
-    [string] $sUserInitiatedDestinationPath = $IncidentOutputFolder + '\' + 'UserNote.txt'
-    Copy-Item -Path $sUserInitiatedFilePath -Destination $sUserInitiatedDestinationPath -ErrorAction SilentlyContinue
+    #// Copy UserNote;
+    [string] $sUserInitiatedFilePath = $(Get-Content env:PUBLIC) + '\Documents' + '\ClueUserInitiated.txt';
+    [string] $sUserInitiatedDestinationPath = $IncidentOutputFolder + '\' + 'UserNote.txt';
+    Copy-Item -Path $sUserInitiatedFilePath -Destination $sUserInitiatedDestinationPath -ErrorAction SilentlyContinue;
 	  ]]></Action>
   <Action Name="EtlCpuSampled"><![CDATA[
     [string] $sXperfArguments = '-on PROFILE+PROC_THREAD+LOADER -stackWalk Profile -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $IncidentOutputFolder + '\pre-merged-kernel.etl';
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
       
     #// Wait while xperf is collecting;
     Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
@@ -178,25 +178,25 @@
     
     #// Stop xperf;
     $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath;
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
 	  ]]></Action>
   <Action Name="EtlDisk"><![CDATA[
     [string] $sXperfArguments = '-on DISK_IO_INIT+FileIO -stackwalk DiskReadInit+DiskWriteInit+DiskFlushInit -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl';
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments;
-        
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
+
     #// Wait while xperf is collecting;
     Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
     [int] $iSleepTimeInSeconds = 60;
     Start-Sleep -Seconds $iSleepTimeInSeconds;
     Write-Log ('Done sleeping') -Log $Log;
     
-    #// Stop xperf
+    #// Stop xperf;
     $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath;
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
 	  ]]></Action>
   <Action Name="EtlCpuIsrDpc"><![CDATA[
     [string] $sXperfArguments = '-on PROFILE+PROC_THREAD+LOADER+CSWITCH+DPC+INTERRUPT -stackWalk Profile+CSWITCH -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $IncidentOutputFolder + '\pre-merged-kernel.etl';
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
       
     #// Wait while xperf is collecting;
     Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
@@ -206,11 +206,11 @@
     
     #// Stop xperf;
     $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath;
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
 	  ]]></Action>
   <Action Name="EtlDisk"><![CDATA[
     [string] $sXperfArguments = '-on DISK_IO_INIT+FileIO -stackwalk DiskReadInit+DiskWriteInit+DiskFlushInit -BufferSize 256 -MinBuffers 256 -MaxBuffers 256 -f ' + $OutputDirectory + '\pre-merged-kernel.etl';
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
         
     #// Wait while xperf is collecting;
     Write-Log ('Sleeping for seconds: ' + $iSleepTimeInSeconds) -Log $Log;
@@ -218,65 +218,65 @@
     Start-Sleep -Seconds $iSleepTimeInSeconds;
     Write-Log ('Done sleeping') -Log $Log;
     
-    #// Stop xperf
+    #// Stop xperf;
     $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
-    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath;
+    Stop-Xperf -WptFolderPath $WptFolderPath -EtlFilePath $EtlFilePath -Log $Log;
 	  ]]></Action>
   <Action Name="EventLogs"><![CDATA[
-    [string] $sEventLogOutputFolderPath = $IncidentOutputFolder + '\EventLogs'
-    New-Item -Path $sEventLogOutputFolderPath -type directory
-    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Application.evtx'
-    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue
-    [string] $sSource = $env:Windir + '\System32\winevt\Logs\System.evtx'
-    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue
-    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Microsoft-Windows-WMI-Activity*.*'
-    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue
-    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Microsoft-Windows-Sysmon*.evtx'
-    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue
-    [string] $sSource = $env:Windir + '\System32\winevt\Logs\HardwareEvents.evtx'
-    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue
+    [string] $sEventLogOutputFolderPath = $IncidentOutputFolder + '\EventLogs';
+    New-Item -Path $sEventLogOutputFolderPath -type directory;
+    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Application.evtx';
+    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue;
+    [string] $sSource = $env:Windir + '\System32\winevt\Logs\System.evtx';
+    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue;
+    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Microsoft-Windows-WMI-Activity*.*';
+    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue;
+    [string] $sSource = $env:Windir + '\System32\winevt\Logs\Microsoft-Windows-Sysmon*.evtx';
+    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue;
+    [string] $sSource = $env:Windir + '\System32\winevt\Logs\HardwareEvents.evtx';
+    Copy-Item -Path $sSource -Destination $sEventLogOutputFolderPath -ErrorAction SilentlyContinue;
 	  ]]></Action>
   <Action Name="ToolLog"><![CDATA[
-    Copy-Item -Path 'C:\ProgramData\Clue\*.log' -Destination $IncidentOutputFolder -ErrorAction SilentlyContinue
+    Copy-Item -Path 'C:\ProgramData\Clue\*.log' -Destination $IncidentOutputFolder -ErrorAction SilentlyContinue;
     ]]></Action>
   <Action Name="ToolConfig"><![CDATA[
-    Copy-Item -Path '.\config.xml' -Destination $IncidentOutputFolder -ErrorAction SilentlyContinue
+    Copy-Item -Path '.\config.xml' -Destination $IncidentOutputFolder -ErrorAction SilentlyContinue;
     ]]></Action>
   <Action Name="EtlIeStop"><![CDATA[
-    Write-Log ('[EtlIeStop] Flushing kernel.etl and user.etl...') -Log $Log
-    [string] $sEtlPreMergedKernelFilePath = '"' + $IncidentOutputFolder + '\pre-merged-kernel.etl"'
-    [string] $sEtlPreMergedUserFilePath = '"' + $IncidentOutputFolder + '\pre-merged-user.etl"'
-    [string] $sXperfArguments = '-flush -f ' + $sEtlPreMergedKernelFilePath + ' -flush IE -f ' + $sEtlPreMergedUserFilePath
-    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log
-    Write-Log ('[EtlIeStop] Flushing kernel.etl and user.etl...Done!') -Log $Log
+    Write-Log ('[EtlIeStop] Flushing kernel.etl and user.etl...') -Log $Log;
+    [string] $sEtlPreMergedKernelFilePath = '"' + $IncidentOutputFolder + '\pre-merged-kernel.etl"';
+    [string] $sEtlPreMergedUserFilePath = '"' + $IncidentOutputFolder + '\pre-merged-user.etl"';
+    [string] $sXperfArguments = '-flush -f ' + $sEtlPreMergedKernelFilePath + ' -flush IE -f ' + $sEtlPreMergedUserFilePath;
+    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
+    Write-Log ('[EtlIeStop] Flushing kernel.etl and user.etl...Done!') -Log $Log;
     
-    Write-Log ('[EtlIeStop] Stopping xperf...') -Log $Log
-    [string] $sXperfArguments = '-stop -stop IE'
-    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log
-    Write-Log ('[EtlIeStop] Stopping xperf...Done!') -Log $Log
+    Write-Log ('[EtlIeStop] Stopping xperf...') -Log $Log;
+    [string] $sXperfArguments = '-stop -stop IE';
+    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
+    Write-Log ('[EtlIeStop] Stopping xperf...Done!') -Log $Log;
     
-    Write-Log ('[EtlIeStop] Merging ETLs...') -Log $Log
-    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"'
-    [string] $sXperfArguments = '-merge ' + $sEtlPreMergedKernelFilePath + ' ' + $sEtlPreMergedUserFilePath + ' ' + $EtlFilePath
-    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log
-    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log
-    Write-Log ('[EtlIeStop] Merging ETLs...Done!') -Log $Log
+    Write-Log ('[EtlIeStop] Merging ETLs...') -Log $Log;
+    $EtlFilePath = '"' + $IncidentOutputFolder + '\' + $TimeStamp + '.etl"';
+    [string] $sXperfArguments = '-merge ' + $sEtlPreMergedKernelFilePath + ' ' + $sEtlPreMergedUserFilePath + ' ' + $EtlFilePath;
+    Write-Log ('[EtlIeStop] Start-Xperf -WptFolderPath ' + $WptFolderPath + ' -Arguments ' + $sXperfArguments) -Log $Log;
+    Start-Xperf -WptFolderPath $WptFolderPath -Arguments $sXperfArguments -Log $Log;
+    Write-Log ('[EtlIeStop] Merging ETLs...Done!') -Log $Log;
     
-    Write-Log ('[EtlIeStop] Removing kernel.etl and user.etl...') -Log $Log
-    Remove-Item -Path $sEtlPreMergedKernelFilePath -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path $sEtlPreMergedUserFilePath -Force -ErrorAction SilentlyContinue
-    Write-Log ('[EtlIeStop] Removing kernel.etl and user.etl...Done!') -Log $Log
+    Write-Log ('[EtlIeStop] Removing kernel.etl and user.etl...') -Log $Log;
+    Remove-Item -Path $sEtlPreMergedKernelFilePath -Force -ErrorAction SilentlyContinue;
+    Remove-Item -Path $sEtlPreMergedUserFilePath -Force -ErrorAction SilentlyContinue;
+    Write-Log ('[EtlIeStop] Removing kernel.etl and user.etl...Done!') -Log $Log;
 	  ]]></Action>  
   <Action Name="OnUninstall"><![CDATA[
-    #// Stop any existing netsh traces
-    [string] $sCmd = 'netsh trace stop'
-    Write-Log ($sCmd) -Log $Log
-    Invoke-Expression -Command $sCmd
+    #// Stop any existing netsh traces;
+    [string] $sCmd = 'netsh trace stop';
+    Write-Log ($sCmd) -Log $Log;
+    Invoke-Expression -Command $sCmd;
     
     #// Stop xperf
-    Stop-Xperf -WptFolderPath $WptFolderPath    
+    Stop-Xperf -WptFolderPath $WptFolderPath -Log $Log;
     ]]></Action>
   <PAL PALVERSION="2.0">
     <QUESTION Name="OS" Value="Windows Server 2008 R2">
