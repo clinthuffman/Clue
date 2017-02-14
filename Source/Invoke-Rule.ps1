@@ -1,4 +1,4 @@
-﻿param([string] $RuleName='UserInitiated', [string] $Force = 'false')
+﻿param([string] $RuleName='UserInitiated', [string] $Force = 'false', [string] $Log = '.\Invoke-Rule.log')
 # This code is Copyright (c) 2016 Microsoft Corporation.
 #
 # All rights reserved.
@@ -16,8 +16,6 @@ Remove-Module * -Force
 Import-Module .\Modules\General.psm1 -Force
 Import-Module .\Modules\Xml.psm1 -Force
 Import-Module .\Modules\FileSystem.psm1 -Force
-
-[string] $Log = '.\Invoke-Rule.log'
 
 #///////////
 #// Main //
@@ -110,7 +108,10 @@ if ($OutputDirectory -ne '')
 if ($Actions -ne '')
 {
     Write-Log ('[Invoke-Rule:' + $RuleName + '] Invoke-Actions: ' + $Actions) -Log $Log
-    Invoke-Actions -XmlConfig $XmlConfig -WptFolderPath $WptFolderPath -RuleName $RuleName -Actions $Actions -OutputDirectory $OutputDirectory -Log $Log
+    if ($RuleName -ne 'OnUninstall')
+    {
+        Invoke-Actions -XmlConfig $XmlConfig -WptFolderPath $WptFolderPath -RuleName $RuleName -Actions $Actions -OutputDirectory $OutputDirectory -Log $Log
+    }
 }
 else
 {

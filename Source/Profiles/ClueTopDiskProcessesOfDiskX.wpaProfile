@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WpaProfileContainer xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="2" xmlns="http://tempuri.org/SerializableElement.xsd">
+  <Content xsi:type="WpaProfile2">
+    <Sessions>
+      <Session Index="0">
+        <FileReferences />
+      </Session>
+    </Sessions>
+    <Views>
+      <View Guid="a9f38e46-dea5-4ca0-b547-d778108a8ced" Title="Analysis" IsVisible="true">
+        <Graphs>
+          <Graph Guid="12c5387c-58ca-45d4-a5c6-450475c30e06" LayoutStyle="All" Color="#FF008000" GraphHeight="125" IsShown="true" HelpText="{}{\rtf1\ansi\ansicpg1252\uc1\htmautsp\deff2{\fonttbl{\f0\fcharset0 Times New Roman;}{\f2\fcharset0 Segoe UI;}}{\colortbl\red0\green0\blue0;\red255\green255\blue255;}\loch\hich\dbch\pard\plain\ltrpar\itap0{\lang1033\fs18\f2\cf0 \cf0\ql{\f2 {\ltrch This graph shows disk I/O time from beginning to end, including initiation time, with sizes in Bytes (B). If available, disk priority is shown.}\li0\ri0\sa0\sb0\fi0\ql\par}&#xD;&#xA;}&#xD;&#xA;}">
+            <Preset Name="ClueTopDiskProcessesOfDiskX" BarGraphIntervalCount="50" GraphColumnCount="5" KeyColumnCount="2" LeftFrozenColumnCount="3" RightFrozenColumnCount="4" InitialFilterQuery="[Disk]:=&quot;xxx&quot;" InitialFilterShouldKeep="true" GraphFilterColumnGuid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c">
+              <MetadataEntries>
+                <MetadataEntry Guid="59b4288c-fee0-4b90-86dc-369b79f0b526" Name="Complete Time" ColumnMetadata="EndTime" />
+                <MetadataEntry Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" ColumnMetadata="Duration" />
+                <MetadataEntry Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" ColumnMetadata="ResourceId" />
+              </MetadataEntries>
+              <HighlightEntries />
+              <Columns>
+                <Column Guid="585dad88-c4ba-4e39-a1e5-c41f43c4e7fb" Name="Process" SortPriority="1" Width="180" IsVisible="true" />
+                <Column Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" SortPriority="2" TextAlignment="Right" Width="40" />
+                <Column Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" AggregationMode="Sum" SortOrder="Descending" TextAlignment="Right" Width="120" CellFormat="uN" IsVisible="true" />
+              </Columns>
+            </Preset>
+          </Graph>
+        </Graphs>
+        <SessionIndices>
+          <SessionIndex>0</SessionIndex>
+        </SessionIndices>
+      </View>
+    </Views>
+    <ModifiedGraphs>
+      <GraphSchema Guid="12C5387C-58CA-45D4-A5C6-450475C30E06" HelpText="{}{\rtf1\ansi\ansicpg1252\uc1\htmautsp\deff2{\fonttbl{\f0\fcharset0 Times New Roman;}{\f2\fcharset0 Segoe UI;}}{\colortbl\red0\green0\blue0;\red255\green255\blue255;}\loch\hich\dbch\pard\plain\ltrpar\itap0{\lang1033\fs18\f2\cf0 \cf0\ql{\f2 {\ltrch This graph shows disk I/O time from beginning to end, including initiation time, with sizes in Bytes (B). If available, disk priority is shown.}\li0\ri0\sa0\sb0\fi0\ql\par}&#xD;&#xA;}&#xD;&#xA;}">
+        <ModifiedPresets>
+          <Preset Name="ClueTopDisk" BarGraphIntervalCount="50" GraphColumnCount="4" KeyColumnCount="1" LeftFrozenColumnCount="2" RightFrozenColumnCount="3" InitialFilterShouldKeep="true" GraphFilterColumnGuid="66852a8e-74d2-4ec7-ad13-bcae0644b9c9">
+            <MetadataEntries>
+              <MetadataEntry Guid="59b4288c-fee0-4b90-86dc-369b79f0b526" Name="Complete Time" ColumnMetadata="EndTime" />
+              <MetadataEntry Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" ColumnMetadata="Duration" />
+              <MetadataEntry Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" ColumnMetadata="ResourceId" />
+            </MetadataEntries>
+            <HighlightEntries />
+            <Columns>
+              <Column Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" TextAlignment="Right" Width="40" IsVisible="true" />
+              <Column Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" AggregationMode="Sum" SortOrder="Descending" SortPriority="1" TextAlignment="Right" Width="120" CellFormat="uN" IsVisible="true" />
+            </Columns>
+          </Preset>
+          <Preset Name="ClueTopProcessByDiskX" BarGraphIntervalCount="50" GraphColumnCount="5" KeyColumnCount="2" LeftFrozenColumnCount="3" RightFrozenColumnCount="4" InitialFilterQuery="[Disk]:=&quot;3&quot;" InitialFilterShouldKeep="true" GraphFilterColumnGuid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c">
+            <MetadataEntries>
+              <MetadataEntry Guid="59b4288c-fee0-4b90-86dc-369b79f0b526" Name="Complete Time" ColumnMetadata="EndTime" />
+              <MetadataEntry Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" ColumnMetadata="Duration" />
+              <MetadataEntry Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" ColumnMetadata="ResourceId" />
+            </MetadataEntries>
+            <HighlightEntries />
+            <Columns>
+              <Column Guid="585dad88-c4ba-4e39-a1e5-c41f43c4e7fb" Name="Process" SortPriority="1" Width="180" IsVisible="true" />
+              <Column Guid="4faeb98e-ba24-44f4-93ce-208e0321f438" Name="Disk" SortPriority="2" TextAlignment="Right" Width="40" />
+              <Column Guid="c01c5ca8-59e6-4c1d-9db7-32e00186d65c" Name="Disk Service Time" AggregationMode="Sum" SortOrder="Descending" TextAlignment="Right" Width="120" CellFormat="uN" IsVisible="true" />
+            </Columns>
+          </Preset>
+        </ModifiedPresets>
+        <PersistedPresets />
+      </GraphSchema>
+    </ModifiedGraphs>
+  </Content>
+</WpaProfileContainer>

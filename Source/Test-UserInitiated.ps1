@@ -39,7 +39,7 @@ Write-Log ('Desktop batch file: ' + $DesktopBatchFile) -Log $Log
 Add-content -Path $DesktopBatchFile -value ('@echo off') -Encoding Ascii
 Add-content -Path $DesktopBatchFile -value ('echo UserInitiated >> ' + $sTextFilePath) -Encoding Ascii
 Add-content -Path $DesktopBatchFile -value ('echo =========== USER INITIATED ===================') -Encoding Ascii
-Add-content -Path $DesktopBatchFile -value ('echo Dumping processes... This may take a minute or two...') -Encoding Ascii
+Add-content -Path $DesktopBatchFile -value ('echo This may take a minute or two...') -Encoding Ascii
 Add-content -Path $DesktopBatchFile -value ('echo You may close this command prompt at any time.') -Encoding Ascii
 Add-content -Path $DesktopBatchFile -value ('echo ==============================================') -Encoding Ascii
 Add-content -Path $DesktopBatchFile -value ('pause') -Encoding Ascii
@@ -53,6 +53,7 @@ Add-content -Path $DesktopBatchFile -value ('pause') -Encoding Ascii
 Start-TruncateLog -FilePath $Log -Log $Log
 [datetime] $dtLastLogTruncate = (Get-Date)
 
+New-Item -Path $sTextFilePath -ItemType File
 '' > $sTextFilePath
 Test-Error -Err $Error -Log $Log
 Write-Log ('[Test-UserInitiated] Cleared the ClueUserInitiated.txt file.') -Log $Log

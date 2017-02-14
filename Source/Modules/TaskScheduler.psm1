@@ -101,6 +101,15 @@ Function New-Ps2ScheduledTask
 {
     param([string] $ScheduledTaskFolderPath, [string] $Name, [string] $Description, [string] $Path, [string] $Arguments, [string] $Trigger, [string] $WorkingDirectory, [string] $StartImmediately = 'true', [string] $Priority = 'normal', [string] $Log = '.\Clue.log')
 
+    $TASK_TRIGGER_TIME = 1
+    $TASK_TRIGGER_BOOT = 8
+    $EXECUTABLE_OR_SCRIPT = 0
+    $CREATE_OR_UPDATE = 6
+    $TASK_LOGON_SERVICE_ACCOUNT = 5
+    $TASK_LOGON_PASSWORD = 1
+    $HIGH_PRIORITY_CLASS = 1
+    $THREAD_PRIORITY_LOW = 8
+
     Write-Log ('[New-Ps2ScheduledTask]: START') -Log $Log
     Write-Log ('[New-Ps2ScheduledTask]: ' + $ScheduledTaskFolderPath + ',' + $Name + ',' + $Description + ',' + $Path + ',' + $Arguments + ',' + $Trigger + ',' + $WorkingDirectory + ',' + $StartImmediately) -Log $Log
 
@@ -121,6 +130,8 @@ Function New-Ps2ScheduledTask
     $oTaskDefinition.Settings.AllowHardTerminate = $false
     $oTaskDefinition.Settings.StopIfGoingOnBatteries = $false
     $oTaskDefinition.Settings.DisallowStartIfOnBatteries = $false
+    
+    $oTaskDefinition.Settings.IdleSettings.StopOnIdleEnd = $false
 
     if ($Priority -eq 'high')
     {
@@ -131,15 +142,6 @@ Function New-Ps2ScheduledTask
     {
         $oTaskDefinition.Settings.Priority = $THREAD_PRIORITY_LOW
     }
-
-    $TASK_TRIGGER_TIME = 1
-    $TASK_TRIGGER_BOOT = 8
-    $EXECUTABLE_OR_SCRIPT = 0
-    $CREATE_OR_UPDATE = 6
-    $TASK_LOGON_SERVICE_ACCOUNT = 5
-    $TASK_LOGON_PASSWORD = 1
-    $HIGH_PRIORITY_CLASS = 1
-    $THREAD_PRIORITY_LOW = 8
 
     if (($Trigger -eq 'onstart') -or ($Trigger -eq '0'))
     {

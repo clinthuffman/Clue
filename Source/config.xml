@@ -1,6 +1,7 @@
 <Configuration InstallationDirectory="%ProgramData%\Clue" OutputDirectory="" UploadNetworkShare="" EmailReportTo="" WptFolderPath="">
   <Rule Type="ScheduledTask" Enabled="True" Name="Invoke-OnWindowsStart" Description="Executes the OnWindowsStart action when Windows start." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Invoke-OnWindowsStart.ps1 -RuleName OnWindowsStart" Trigger="onstart" StartImmediately="true" Priority="low" Actions="OnWindowsStart" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-DiskLatencyGt35ms" Ran="0" RunLimit="3" CounterPath="\LogicalDisk(*)\Avg. Disk Sec/Transfer" Exclude="_Total,HarddiskVolume" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="0.035" Actions="Tasklist,EtlDisk,PoolTags,PalCollector,ToolConfig,ToolLog">
+  <Rule Type="ScheduledTask" Enabled="True" Name="Test-UserInitiated" Description="Monitors %public%\Documents\ClueUserInitiated.txt" Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-UserInitiated.ps1" Trigger="5" StartImmediately="true" Priority="high" Actions="Tasklist,EtlAppHang,PoolTags,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-DiskLatencyGt35ms" Ran="0" RunLimit="3" CounterPath="\LogicalDisk(*)\Avg. Disk Sec/Transfer" Exclude="_Total,HarddiskVolume" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="0.035" StartImmediately="true" Actions="Tasklist,EtlDisk,PoolTags,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
       $WmiDisks = Get-WmiObject -Query 'SELECT * FROM Win32_LogicalDisk WHERE DriveType <> 3';
       foreach ($oDisk in $WmiDisks)
@@ -11,7 +12,7 @@
   </Rule>
   <Rule Type="Counter" Enabled="True" Name="Counter-MemoryFreeSystemPTEsLt50K" Ran="0" RunLimit="3" CounterPath="\Memory\Free System Page Table Entries" SampleInterval="1" MaxSamples="3" Operator="lt" Threshold="50000" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="Counter" Enabled="True" Name="Counter-ProcessorTimeGt90" Ran="0" RunLimit="3" CounterPath="\Processor Information(*)\% Processor Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="90" Actions="Tasklist,EtlCpuSampled,PalCollector,ToolConfig,ToolLog" />
-  <Rule Type="Counter" Enabled="True" Name="Counter-DpcTimeGt30" Ran="0" RunLimit="3" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="30" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
+  <Rule Type="Counter" Enabled="True" Name="Counter-DpcTimeGt50" Ran="0" RunLimit="3" CounterPath="\Processor Information(*)\% DPC Time" Exclude="_Total" SampleInterval="1" MaxSamples="3" Operator="gt" Threshold="50" Actions="Tasklist,EtlCpuIsrDpc,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="Counter" Enabled="True" Name="Counter-PhysicalMemoryLt10Percent" Ran="0" RunLimit="3" CounterPath="\Memory\Available MBytes" Exclude="" SampleInterval="1" MaxSamples="1" Operator="lt" Threshold="500" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog">
     <CODE><![CDATA[
       [double] $number = 0;
@@ -48,10 +49,7 @@
   </Rule>
   <Rule Type="ScheduledTask" Enabled="True" Name="Test-ProcessAddressSpace" Ran="0" RunLimit="3" Description="Tests if any process is low on virtual address space." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-ProcessAddressSpace.ps1" Trigger="5" StartImmediately="false" Priority="low" Actions="Tasklist,EtlMemory,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="ScheduledTask" Enabled="True" Name="Invoke-Rule" Description="Starts data collection of a rule." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Invoke-Rule.ps1 `$(Arg0)" Trigger="manual" StartImmediately="false" Priority="high" />
-  <Rule Type="ScheduledTask" Enabled="True" Name="Test-UserInitiated" Description="Monitors %public%\Documents\ClueUserInitiated.txt" Path="powershell" Arguments="-ExecutionPolicy ByPass -File Test-UserInitiated.ps1" Trigger="5" StartImmediately="true" Priority="high" Actions="Tasklist,EtlAppHang,PoolTags,PalCollector,ToolConfig,ToolLog" />
   <Rule Type="ScheduledTask" Enabled="True" Name="IncidentFolderManagement" Description="Manages and uploads incident folders." Path="powershell" Arguments="-ExecutionPolicy ByPass -File IncidentFolderManagement.ps1" Trigger="30" StartImmediately="false" Priority="low" />
-  <Rule Type="ScheduledTask" Enabled="True" Name="Config-Manager" Description="Manages and updates config.xml." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Config-Manager.ps1" Trigger="30" StartImmediately="true" Priority="high" />
-  <Rule Type="ScheduledTask" Enabled="True" Name="Start-ProcessDump" Description="Triggers a user-initiated process dump." Path="powershell" Arguments="-ExecutionPolicy ByPass -File Start-ProcessDump.ps1 -ProcessName iexplore" Trigger="5" StartImmediately="true" Priority="high" />
   <Rule Type="Manual" Enabled="True" Name="OnUninstall" Actions="OnUninstall" />  
   <Action Name="PalCollector"><![CDATA[
     [int] $DelayInSeconds = 60;

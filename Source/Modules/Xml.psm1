@@ -154,7 +154,7 @@ Function Invoke-Actions
     Write-Log ('[Invoke-Actions] Actions: ' + $Actions) -Log $Log
     $IncidentOutputFolder = Get-IncidentFolderPath -TimeStamp $TimeStamp -RuleName $RuleName -OutputDirectory $OutputDirectory
     Write-Log ('[Invoke-Actions] IncidentOutputFolder: ' + $IncidentOutputFolder) -Log $Log
-    if ((New-DirectoryWithConfirm -DirectoryPath $IncidentOutputFolder) -eq $false)
+    if ((New-DirectoryWithConfirm -DirectoryPath $IncidentOutputFolder -Log $Log) -eq $false)
     {
         Test-Error -Err $Error -Log $Log
         Write-Log ('[Invoke-Actions] Unable to create: ' + $IncidentOutputFolder) -Log $Log

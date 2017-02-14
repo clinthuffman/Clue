@@ -12,14 +12,14 @@ param([string] $IsSilentInstallation = 'false')
 #  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
 #  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
 
+[string] $Log = ([System.Environment]::ExpandEnvironmentVariables('%TEMP%') + '\ClueSetup.log')
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
+
 Remove-Module * -Force
 Import-Module .\Modules\General.psm1 -Force
 Import-Module .\Modules\Xml.psm1 -Force
 Import-Module .\Modules\FileSystem.psm1 -Force
 Import-Module .\Modules\TaskScheduler.psm1 -Force
-
-[string] $Log = ([System.Environment]::ExpandEnvironmentVariables('%TEMP%') + '\ClueSetup\Setup.log')
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
 #////////////////
 #// Functions //
@@ -227,6 +227,7 @@ Function Get-EmailForReport
 #///////////
 #// Main //
 #/////////
+Clear-Content -Path $Log
 Write-Log ('[Setup]: Start') -Log $Log
 $Error.Clear()
 
@@ -365,7 +366,7 @@ if ($XmlConfig -eq $null)
 {
     Write-MsgBox 'Unable to get the XML configuration. Setup has failed.'
 }
-
+<#
 Set-OverallProgress -Status 'Downloading Sysinternals tools...'
 Write-Console ''
 Write-Console '//////////////////////////////////'
@@ -374,7 +375,7 @@ Write-Console '////////////////////////////////'
 Write-Console ''
 [string] $DownloadFolderPath = (pwd).Path + '\sysint' 
 Download-SysInternalsTool -FileName 'procdump.exe' -DownloadToFolderPath $DownloadFolderPath
-
+#>
 Set-OverallProgress -Status 'Installation folder...'
 Write-Console ''
 Write-Console '//////////////////////////'
@@ -406,7 +407,6 @@ else
     Write-Console ("`t" + 'Folder copy FAILED! See "' + $Log + '" for details.')
     Exit;
 }
-[string] $Log = ($InstallationDirectory + '\Setup.log')
 Write-Console ('Log: ' + $Log)
 Write-Console '// Loading config.xml from installation directory //'
 [xml] $XmlDoc = OpenConfigXml -XmlFilePath $FilePathOfConfigXml -Log $Log
@@ -449,7 +449,7 @@ $UploadNetworkShare = Get-UploadNetworkShare -XmlConfig $XmlConfig -Log $Log
 Write-Console 'Done!' -bAddDateTime $false
 Write-Console ("`t" + 'Upload network share: "' + $UploadNetworkShare + '"')
 Test-Error -Err $Error -Log $Log
-
+<#
 Set-OverallProgress -Status 'Email address(es)...'
 Write-Console ''
 Write-Console '///////////////////////'
@@ -462,7 +462,7 @@ $EmailReportTo = Get-EmailForReport -XmlConfig $XmlConfig -Log $Log
 Write-Console 'Done!' -bAddDateTime $false
 Write-Console ("`t" + 'Email report to: "' + $EmailReportTo + '"')
 Test-Error -Err $Error -Log $Log
-
+#>
 Set-OverallProgress -Status 'Save changes...'
 Write-Console ''
 Write-Console '///////////////////'
@@ -561,19 +561,19 @@ if ($IsPagingExecutiveDisabed -eq $False)
     {
         if ($IsSilentInstallation -eq $false)
         {
-            Write-MsgBox -sLine 'A reboot is required. Please reboot this system at the earliest convenience' -Log $Log
+            #Write-MsgBox -sLine 'A reboot is required. Please reboot this system at the earliest convenience' -Log $Log
         }
     }
     else
     {
-        Write-Console -sLine 'ERROR: Unable to set DisablePagingExecutive!' -Log $Log
+        #Write-Console -sLine 'ERROR: Unable to set DisablePagingExecutive!' -Log $Log
     }
 }
 
 #// Finalize setup.
 Write-Progress -activity 'Overall progress: ' -status 'Progress: 100%' -Completed -id 1
 Write-Console '[PopUp] Please acknowledge installation has finished...' -bNoNewLine $true
-[string] $FinalMessage = 'Installation is finished! For details see %ProgramData%\Clue\Setup.log.'
+[string] $FinalMessage = ('Installation is finished! For details see ' + $Log)
 Write-Console ''
 Write-Console '////////////'
 Write-Console '// DONE! //'

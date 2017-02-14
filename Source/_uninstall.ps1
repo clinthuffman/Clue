@@ -12,7 +12,8 @@ param([string] $IsSilentInstallation = 'false')
 #  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
 #  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
 
-[string] $Log = ((PWD).Path + '\Setup.log')
+[string] $Log = ([System.Environment]::ExpandEnvironmentVariables('%TEMP%') + '\ClueSetup.log')
+Clear-Content -Path $Log
 
 Remove-Module * -Force
 Import-Module .\Modules\General.psm1 -Force
@@ -223,7 +224,7 @@ Write-Console '////////////////////////'
 Write-Console ''
 
 #// Run OnUninstall rule
-.\Invoke-Rule.ps1 -RuleName 'OnUninstall' -Force $true
+.\Invoke-Rule.ps1 -RuleName 'OnUninstall' -Force $true -Log $Log
 
 Remove-Module * -Force
 Import-Module .\Modules\General.psm1 -Force

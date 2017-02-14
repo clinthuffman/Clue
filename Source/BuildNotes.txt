@@ -2,6 +2,11 @@
 // Build notes //
 ////////////////
 
+*v1.0.6*
+*Update:* Updated Counter-DpcTimeGt30 to Counter-DpcTimeGt50 with a threshold of 50. Disk testing was causing this rule to trigger too much.
+*Update:* Removed the Start-ProcessDump feature for now. Might add it back later.
+*Fixes:* Several fixes to installation and uninstallation.
+
 *v1.0.5*
 *Update:* Added trigger for DPCs as Counter-DpcTimeGt30 is enabled by default.
 *New:* Start-ProcessDump added. This allows non-admin users to initiate debug dumps of all processes of Internet Explorer (iexplore.exe). Another process name can be used if needed. Requires modifying config.xml. Requires procdump.exe.

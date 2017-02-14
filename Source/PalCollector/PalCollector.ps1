@@ -1,5 +1,4 @@
-﻿param([string] $OutputDirectory='%systemdrive%\Perflogs', [string] $Log = '.\Setup.log')
-<#
+﻿<#
     .SYNOPSIS
     Looks for a PAL tool threshold file that best matches your system and creates a data collector set based on the threshold file.
     .DESCRIPTION
@@ -12,44 +11,36 @@
     Created: 2013-01-08
     Keywords: PowerShell, PAL
 #>
-# Requires -Version 2.0
-# This code is Copyright (c) 2016 Microsoft Corporation.
-#
-# All rights reserved.
-#
-# THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, 
-#  INCLUDING BUT NOT LIMITED To THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-#  PARTICULAR PURPOSE.'
-#
-# IN NO EVENT SHALL MICROSOFT AND/OR ITS RESPECTIVE SUPPLIERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR 
-#  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
-#  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
-#  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
+param([string] $OutputDirectory='%systemdrive%\Perflogs', [string] $IcuLogFilePath ='')
+
+[bool] $global:IsIcuInstallation = $False
+
+If ($OutputDirectory -eq '') {$OutputDirectory='%systemdrive%\Perflogs'}
+
+[string] $WorkingDirectory = $pwd
+Set-Location $WorkingDirectory
+
+if ($IcuLogFilePath -ne '')
+{
+    [string] $Log = $IcuLogFilePath
+    [bool] $global:IsIcuInstallation = $true    
+}
+else
+{
+    [string] $Log = $WorkingDirectory + '\Setup.log'
+}
+
+[string] '[' + (Get-Date) + '] [PalCollector.ps1] Start' >> $Log
+
+trap
+{
+    $_ >> $Log
+}
 
 Function Write-Log
 {
-    param($Output, [string] $Log = '.\Setup.log')
-    #// Writes to the log file.
-    $TimeStamp = "$(Get-Date -format yyyyMMdd-HHmmss)"    
-    if ($Output -eq $null) {Add-content $Log -value ('[' + $TimeStamp + '] NULL') -Encoding Unicode;Return}
-    switch ($Output.GetType().FullName)
-    {
-        'System.String'                {Add-content -Path $Log -value ('[' + $TimeStamp + '] ' + $Output) -Encoding Unicode}
-        'System.Collections.ArrayList' {Add-content -Path $Log -value ('[' + $TimeStamp + ']') -Encoding Unicode; $Output >> $Log}
-        default                        {Add-content -Path $Log -value ('[' + $TimeStamp + '] ' + $Output) -Encoding Unicode}
-    }
-}
-
-Function Test-Error
-{
-    param($Err)
-    #// Tests if an error condition exists and writes it to the log.
-    if ($Err.Count -gt 0)
-    {
-        Write-Log ('[Test-Error] Error(s) found: ' + $Err.Count) -Log $Log
-        Write-Log ($Err) -Log $Log
-        $Err.Clear()
-    }
+    param([string] $sLine)
+    '[' + (Get-Date) + '] [PalCollector.ps1] ' + $sLine >> $Log
 }
 
 Function Test-FileExists
@@ -495,7 +486,7 @@ Function Get-DataSourceCounterObjectsFromXml
 
 Function GetDataCollectorSetNames
 {
-    Write-Log ('[GetDataCollectorSetNames]: START') -Log $Log
+    Write-Log ('[GetDataCollectorSetNames]: START')
     [string] $sLine = ''
     [bool] $IsPastHeader = $false
     $oCollectionOfDataCollectorNames = New-Object System.Collections.ArrayList
@@ -519,64 +510,27 @@ Function GetDataCollectorSetNames
             [void] $oCollectionOfDataCollectorNames.Add($aLine[0])
         }
     }
-    Write-Log ('[GetDataCollectorSetNames]: END') -Log $Log
+    Write-Log ('[GetDataCollectorSetNames]: END')
     Return $oCollectionOfDataCollectorNames
-}
-
-Function New-DirectoryWithConfirm
-{
-    param([string] $DirectoryPath)
-
-    if ((Test-Path -Path $DirectoryPath) -eq $False)
-    {
-        $aFolderPath = $DirectoryPath.Split('\')
-        [string] $sPartialPath = ''
-        [string] $sParentPath = ''
-        ForEach ($sPath in $aFolderPath)
-        {
-            if ($sPartialPath -eq '')
-            {
-                $sPartialPath = $sPath
-                $sParentPath = $sPath + '\'
-            }
-            else
-            {
-                $sParentPath = $sPartialPath + '\'
-                $sPartialPath = $sPartialPath + '\' + $sPath
-            }
-
-            if ((Test-Path -Path $sPartialPath) -eq $False)
-            {
-                $null = New-Item -Path $sParentPath -Name $sPath -type directory
-            }
-        }
-    }
-    Return [bool] (Test-Path -Path $DirectoryPath)
 }
 
 #//////////
 #// Main //
 #//////////
 
-Write-Log '[Start]' -Log $Log
-
-[string] $sDataCollectorSetName = 'PalCollector'
-
-if ($OutputDirectory -eq '') {$OutputDirectory = '%systemdrive%\Perflogs'}
-
 #// Test is output directory exists.
 $OutputDirectory = [System.Environment]::ExpandEnvironmentVariables($OutputDirectory)
-[bool] $IsCreated = New-DirectoryWithConfirm -DirectoryPath $OutputDirectory
-Test-Error -Err $Error -Log $Log
-if ($IsCreated -eq $False)
+
+If ((Test-Path -Path $OutputDirectory) -eq $False)
 {
-    Write-Log ('Unable to create output folder: ' + $OutputDirectory) -Log $Log
-    Exit;
+    Write-Error "Output directory does not exist: $OutputDirectory"
+    Break;
 }
 
-#// Test if output logical drive has enough free disk space.
-#//$OutputDriveLetter = $OutputDirectory.Substring(0,1) + ':'
-#//$OutputDriveLetter = $OutputDriveLetter.ToUpper()
+$OutputDriveLetter = $OutputDirectory.Substring(0,1) + ':'
+$OutputDriveLetter = $OutputDriveLetter.ToUpper()
+
+#// Test if output logical drive had enough free disk space.
 #//If ((Test-LogicalDiskFreeSpace -DriveLetterOrPath $OutputDirectory -FreeSpaceInMB 200) -eq $False)
 #//{
 #//    Write-Warning "Not enough free space on $OutputDriveLetter drive! Select another location with more free space."
@@ -585,7 +539,6 @@ if ($IsCreated -eq $False)
 
 $global:alCounterList = New-Object System.Collections.ArrayList
 $oCounterObjectsOnLocalSystem = Get-Counter -ListSet * | SELECT CounterSetName, CounterSetType | Sort-Object CounterSetName
-Test-Error -Err $Error -Log $Log
 
 If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
 {
@@ -596,7 +549,8 @@ If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
 
     ForEach ($oFile in $oFiles)
     {
-        Write-Log ($oFile.Name) -Log $Log
+        Write-Log $oFile.Name
+        #$oFile.Name >> $Log
         $iMatches = 0
         $iCounters = 0
 
@@ -616,8 +570,8 @@ If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
 
     $alCounterObjectsFromThresholdFiles = $alCounterObjectsFromThresholdFiles.GetEnumerator() | Sort-Object
     $alCounterObjectsFromThresholdFiles > .\CounterObjectList.txt
+
 }
-Test-Error -Err $Error -Log $Log
 
 If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
 {
@@ -627,7 +581,9 @@ If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
 
 $aFile = Get-Content -Path .\CounterObjectList.txt
 $alCounterObjectsFromPalThresholdFiles = New-Object System.Collections.ArrayList(,$aFile)
-Test-Error -Err $Error -Log $Log
+
+
+#$alCounterObjectsFromPalThresholdFiles = Get-Content -Path .\CounterObjectList.txt
 
 ForEach ($oCounterObjectOnLocalSystem in $oCounterObjectsOnLocalSystem)
 {
@@ -639,11 +595,11 @@ ForEach ($oCounterObjectOnLocalSystem in $oCounterObjectsOnLocalSystem)
         $IsMatch = $true
     }
 
-    if ($IsMatch -eq $False)
+    if (($IsMatch -eq $False) -and ($sCounterObjectOnComputer.Contains('MSSQL$')))
     {
         $sFromSystem = ExtractSqlCounterObject -sText $sCounterObjectOnComputer
         $sFromSystem = 'SQLServer:' + $sFromSystem
-        if ($alCounterObjectsFromPalThresholdFiles.Contains($sFromSystem))
+        if (@($alCounterObjectsFromPalThresholdFiles | Where-Object {$_ -match $sFromSystem}).Count -gt 0)
         {
             $IsMatch = $true
         }
@@ -666,23 +622,32 @@ ForEach ($oCounterObjectOnLocalSystem in $oCounterObjectsOnLocalSystem)
         }
     }
 }
-Test-Error -Err $Error -Log $Log
 
 $global:alCounterList = $global:alCounterList.GetEnumerator() | Sort-Object
-Write-Log ($global:alCounterList) -Log $Log
-Test-Error -Err $Error -Log $Log
+
+$global:alCounterList >> $Log
 
 $UserTempDirectory = Get-UserTempDirectory
-Test-Error -Err $Error -Log $Log
 [string] $sCounterListFilePath = $UserTempDirectory + '\counterlist.txt'
 $global:alCounterList | Out-File -FilePath $sCounterListFilePath -Force
 
-Write-Log '' -Log $Log
+Write-Log ''
 [string] $sCmd = 'logman query'
-Write-Log ($sCmd) -Log $Log
+Write-Log $sCmd
 $oOutput = Invoke-Expression -Command $sCmd
-Write-Log ($oOutput) -Log $Log
-Write-Log ('') -Log $Log
+Write-Log $oOutput
+Write-Log ''
+
+
+if ($global:IsIcuInstallation -eq $true)
+{
+    [string] $sDataCollectorSetName = 'ICU_PalCollector'
+}
+else
+{
+    [string] $sDataCollectorSetName = 'PalCollector'
+}
+
 
 ForEach ($sLine in $oOutput)
 {
@@ -694,22 +659,29 @@ ForEach ($sLine in $oOutput)
     {
         if ($sStatus -eq 'Running')
         {
-            Write-Log ('') -Log $Log
+            Write-Log ''
             [string] $sCmd = 'logman stop ' + $sDataCollectorSet
-            Write-Log ($sCmd) -Log $Log
-            Write-Log (Invoke-Expression -Command $sCmd) -Log $Log
-            Write-Log ('') -Log $Log
+            Write-Log $sCmd
+            Invoke-Expression -Command $sCmd >> $Log
+            Write-Log ''
         }
 
-        Write-Log ('') -Log $Log
+        Write-Log ''
         [string] $sCmd = 'logman delete ' + $sDataCollectorSet
-        Write-Log ($sCmd) -Log $Log
-        Write-Log (Invoke-Expression -Command $sCmd) -Log $Log
-        Write-Log ('') -Log $Log
+        Write-Log $sCmd
+        Invoke-Expression -Command $sCmd >> $Log
+        Write-Log ''
     }
 }
 
-[string] $sOutputFilePath = $OutputDirectory + '\' + $sDataCollectorSetName + '.blg'
+if ($global:IsIcuInstallation -eq $true)
+{
+    [string] $sOutputFilePath = $OutputDirectory + '\ICU_PalCollector.blg'
+}
+else
+{
+    [string] $sOutputFilePath = $OutputDirectory + '\PalCollector.blg'
+}
 
     [string] $sName = ''
     [string] $sCmd = ''
@@ -718,7 +690,7 @@ ForEach ($sLine in $oOutput)
 
     [string] $sCmd = 'logman query' 
     $oOutput = Invoke-Expression -Command $sCmd
-    Write-Log ($oOutput) -Log $Log
+    $oOutput >> $Log
 
     foreach ($sLine in $oOutput)
     {
@@ -737,16 +709,16 @@ ForEach ($sLine in $oOutput)
             {
                 if ($sStatus -ne 'Stopped')
                 {
-                    Write-Log ('Stopping "' + $sName + '"') -Log $Log
+                    Write-Log ('Stopping "' + $sName + '"')
                     $sCmd = 'logman stop "' + $sName + '"'
                     $oOutput = Invoke-Expression -Command $sCmd
-                    Write-Log ($oOutput) -Log $Log
+                    $oOutput >> $Log
                 }
 
-                Write-Log ('Deleting "' + $sName + '"') -Log $Log
+                Write-Log ('Deleting "' + $sName + '"')
                 $sCmd = 'logman delete "' + $sName + '"'
                 $oOutput = Invoke-Expression -Command $sCmd
-                Write-Log ($oOutput) -Log $Log
+                $oOutput >> $Log
             }
         }
 
@@ -757,21 +729,22 @@ ForEach ($sLine in $oOutput)
     }
 
 [string] $sCmd = 'logman create counter ' + $sDataCollectorSetName + ' -cf "' + $UserTempDirectory + '\counterlist.txt" -f bincirc -max 100 -si 00:00:05 -o "' + $sOutputFilePath + '" -ow --v'
-Write-Log ($sCmd) -Log $Log
-Write-Log (Invoke-Expression -Command $sCmd) -Log $Log
-Write-Log ('') -Log $Log
+Write-Log $sCmd
+Invoke-Expression -Command $sCmd >> $Log
+Write-Log ''
 
 
 [string] $sCmd = 'logman start ' + $sDataCollectorSetName
-Write-Log ($sCmd) -Log $Log
-Write-Log (Invoke-Expression -Command $sCmd) -Log $Log
-Write-Log ('') -Log $Log
+Write-Log $sCmd
+Invoke-Expression -Command $sCmd >> $Log
+Write-Log ''
 
-Remove-Item -Path $sCounterListFilePath -ErrorAction SilentlyContinue
+Remove-Item -Path $sCounterListFilePath
 
-[string] $sCmd = 'schtasks /create /tn \Microsoft\Windows\PLA\PalCollector-OnWindowsStart /sc onstart /tr "logman start PalCollector" /ru system /F'
-Write-Log ($sCmd) -Log $Log
-Write-Log (Invoke-Expression -Command $sCmd) -Log $Log
-Write-Log ('') -Log $Log
-Write-Log ('A Performance Monitor data collector called "' + $sDataCollectorSetName + '" has been created in a binary circular log and is scheduled to start upon reboot. Go to Start, Run, "Perfmon", <Enter>, then navigate User Defined data collector sets to see the data collector.') -Log $Log
-Write-Log ('Done!') -Log $Log
+[string] $sCmd = 'schtasks /create /tn PalCollector_OnWindowsStart /sc onstart /tr "logman start PalCollector" /ru system /F'
+Write-Log $sCmd
+Invoke-Expression -Command $sCmd >> $Log
+Write-Log ''
+
+Write-Log ('A Performance Monitor data collector called "' + $sDataCollectorSetName + '" has been created in a binary circular log and is scheduled to start upon reboot. Go to Start, Run, "Perfmon", <Enter>, then navigate User Defined data collector sets to see the data collector.')
+Write-Log 'Done!'

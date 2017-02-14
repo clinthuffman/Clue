@@ -66,4 +66,4 @@ Invoke-MyCmd -Cmd 'schtasks /Delete /TN \Microsoft\Windows\PLA\PalCollector-OnWi
 Invoke-MyCmd -Cmd 'logman stop PalCollector' -Log $Log
 Start-Sleep -Seconds 2
 Invoke-MyCmd -Cmd 'logman delete PalCollector' -Log $Log
-Write-Log ('[Uninstall]: End')
+Write-Log ('[Uninstall]: End') -Log $Log
