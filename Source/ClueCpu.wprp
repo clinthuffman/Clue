@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<WindowsPerformanceRecorder
+    Author="Clint Huffman"
+    Comments="Intended for use with the CLUE tool"
+    Version="1.0"
+    >
+  <Profiles>
+    <SystemCollector
+        Id="ClueSystemCollector"
+        Name="NT Kernel Logger"
+        >
+      <!-- 1MB * 300 buffers = 300 MB -->
+      <BufferSize Value="1024"/> 
+      <Buffers Value="300"/>
+    </SystemCollector>
+    
+    <SystemProvider Id="ClueSystemProvider">
+      <Keywords>        
+        <!-- CPU -->
+        <Keyword Value="ProcessThread"/>
+        <Keyword Value="Loader"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="IdleStates"/>
+      </Keywords>
+      <Stacks>
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+    
+    <EventProvider
+       Id="EventProvider_Microsoft-Windows-Kernel-Processor-Power"
+       Name="Microsoft-Windows-Kernel-Processor-Power"
+       NonPagedMemory="true"
+       Level="6"
+        >
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <!-- UI Rendering -->
+    <EventProvider
+      Id="EventProvider_Microsoft-Windows-Dwm-Core"
+      Name="Microsoft-Windows-Dwm-Core"
+      NonPagedMemory="true"
+      Level="6"
+        >
+      <Keywords>
+        <Keyword Value="0xFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <Profile
+        Description="Trace events"
+        DetailLevel="Verbose"
+        Id="ClueCpuProfile.Verbose.Memory"
+        LoggingMode="Memory"
+        Name="ClueCpuProfile"
+        >
+      
+      <ProblemCategories>
+        <ProblemCategory Value="First Level Triage"/>
+      </ProblemCategories> 
+
+      <Collectors>
+        
+        <SystemCollectorId Value="ClueSystemCollector">
+          <SystemProviderId Value="ClueSystemProvider"/>
+        </SystemCollectorId>
+        
+      </Collectors>
+    
+    </Profile>
+  </Profiles>  
+</WindowsPerformanceRecorder>

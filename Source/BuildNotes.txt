@@ -2,10 +2,50 @@
 // Build notes //
 ////////////////
 
+*v1.1.6*
+*Change:* Changed the thermal threshold from 314 K to 354 K (80 C) for the purpose of identifying CPU throttling.
+*Change:* Storport tracing added to disk latency actions.
+*Change:* Setup no longer looks for OS version compatibility, but continues to look for x64. Looks for wpr.exe and xperf.exe now. If missing, prompts for WPT to be installed.
+
+*v1.1.5*
+*Bug Fix:* Fixed a bug that failed to upload zip files to Azure blobs.
+
+*v1.1.4*
+*Change:* Added IsUploadAzure as a feature to upload to Azure blob storage when needed.
+
+*v1.1.3*
+*Change:* Reduced the data collection sizes.
+
+*v1.1.2*
+*Add:* Added WMI Tracing. When WMIPvrse* is more than 50% of CPU usage, then a CPU trace is started and WMI tracing is captured.
+
+*v1.1.1*
+*Change:* User-initiated batch file updated so non-admin users can use it.
+
+*v1.1.0*
+*Change:* RunTimes change to 10.
+*Change:* ReAdded ETW tracing for memory rules.
+*Change:* ReAdded User-initiated batch file at desktop, but admin rights required.
+*Change:* Xperf.exe and perfctrl.dll included in bits and copied to %WINDIR%\System32 to ensure pathing works. Will try to move this dependency later.
+
+*v1.0.8*
+*Change:* Added thermal tracing.
+*Feature:* Added CollectionLevel. 0 = None, 1 = Minimal, 2 = Moderate, 3 = Full.
+
+*v1.0.7*
+*Change:* Merge of public version and Clue for Surface
+*Change:* Performance counter rules now have OnStartActions, OnEndActions, and MaxTraceTimeInSeconds. This makes ETW trace collections significantly more precise.
+*Change:* Performance counter rules now disable and stop their respective Scheduled Task when their RunLimit is reached. RunLimit can now be reset by re-enabling and restarting the tasks.
+
 *v1.0.6*
+*Update:* Setup and uninstall have been updated to handle installation from a network share.
+*Update:* Data collection rules reduced to CPU and disk only for now. Will other rules back in again later.
 *Update:* Updated Counter-DpcTimeGt30 to Counter-DpcTimeGt50 with a threshold of 50. Disk testing was causing this rule to trigger too much.
 *Update:* Removed the Start-ProcessDump feature for now. Might add it back later.
 *Fixes:* Several fixes to installation and uninstallation.
+*Fixed:* Fixed a bug where folder compression was not working resulting in zip files with no data.
+*Update:* Removed "UPLOADING" zip file rename from IncidentFolderManagement.ps1 due to a bug.
+*Update:* Converted all xperf references to WPR.
 
 *v1.0.5*
 *Update:* Added trigger for DPCs as Counter-DpcTimeGt30 is enabled by default.

@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<WindowsPerformanceRecorder Author="Microsoft Surface Commerical Engineering" Comments="Sample" Company="Microsoft Corporation" Copyright="Microsoft Corporation" Team="Microsoft Surface Commerical Engineering" Version="1.0">
+  <Profiles>
+    <SystemCollector Id="SystemCollector" Name="NT Kernel Logger">
+      <!-- 1MB * 100 buffers = 100 MB -->
+      <BufferSize Value="1024"/> 
+      <Buffers Value="100"/>
+    </SystemCollector>
+
+    <EventCollector Id="EventCollector_UserMode" Name="WPR Sample Event Collector">
+      <!-- 1MB * 95 buffers = 95 MB -->
+      <BufferSize Value="1024"/>
+      <Buffers Value="95"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_UserMode_DXStacks" Name="WPR Sample Event Collector DXStacks">
+      <!-- 1MB * 5 buffers = 5 MB -->
+      <BufferSize Value="1024"/>
+      <Buffers Value="5"/>
+    </EventCollector>
+    
+    <SystemProvider Id="SystemProvider">
+      <Keywords>
+        <!-- Disk -->
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="HardFaults"/>
+        
+        <!-- CPU -->
+        <Keyword Value="ProcessThread"/>
+        <Keyword Value="Loader"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="IdleStates"/>
+
+        <!-- Memory -->
+        <Keyword Value="Memory"/>
+        <Keyword Value="MemoryInfo"/>
+      </Keywords>
+      <Stacks>
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+    
+    <!-- Power -->
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Power" Name="Microsoft-Windows-Kernel-Power" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Processor-Power" Name="Microsoft-Windows-Kernel-Processor-Power" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Pep" Name="Microsoft-Windows-Kernel-Pep" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-PDC" Name="Microsoft-Windows-PDC">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <!-- UI Rendering -->
+    <EventProvider Id="EventProvider_Microsoft-Windows-Dwm-Core" Name="Microsoft-Windows-Dwm-Core" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0xFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_AvalonAll" Name="AvalonAll" NonPagedMemory="true" Level="5">
+      <Keywords>
+        <Keyword Value="0x7FFFFFFF"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0x7FFFFFFF"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMWin7Provider" Name="DWMWin7Provider" NonPagedMemory="true" Level="5" />
+    
+    <EventProvider Id="EventProvider_Udwm" Name="a2d1c713-093b-43a7-b445-d09370ec9f47" NonPagedMemory="true" Level="4">
+      <Keywords>
+        <Keyword Value="0xffffffffffffffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_ScheduleGuid" Name="8cc44e31-7f28-4f45-9938-4810ff517464" Level="6">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DXC" Name="802ec45a-1e99-4b83-9920-87c98277ba9d" NonPagedMemory="true" Level="5">
+      <Keywords>
+        <Keyword Value="0xA05"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DXC_Stacks" Name="802ec45a-1e99-4b83-9920-87c98277ba9d" NonPagedMemory="true" Stack="true" Level="5">
+      <Keywords>
+        <Keyword Value="0x40"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_DWMAPI" Name="292a52c4-fa27-4461-b526-54a46430bd54" Level="6"/>
+    
+    <EventProvider Id="EventProvider_DX" Name="DX" Level="6"/>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-DirectComposition" Name="Microsoft-Windows-DirectComposition" Level="6"/>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Win32k" Name="Microsoft-Windows-Win32k" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0x2e3000"/>
+      </Keywords>
+      <CaptureStateOnSave >
+        <Keyword Value="0x2e3000" />
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_DWMApiTracerProvider" Name="71dd85bc-d474-4974-b0f6-93ffc5bfbd04" Level="6"/>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-UxTheme" Name="Microsoft-Windows-UxTheme" Level="6"/>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Immersive-Shell" Name="315a8872-923e-4ea2-9889-33cd4754bf64" NonPagedMemory="true" Level="4"/>
+    
+    <EventProvider Id="EventProvider_PerfTrack" Name="PerfTrack" Level="4" />
+    
+    <EventProvider Id="EventProvider_E3" Name="Microsoft-Windows-Energy-Estimation-Engine" Level="4" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Dwm-CoreWin" Level="0" Name="9e9bba3c-2e38-40cb-99f4-9e8281425164" NonPagedMemory="true" EventKey="true">
+      <Keywords>
+        <Keyword Value="0x30" />
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0x30" />
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <Profile Description="Trace events" DetailLevel="Verbose" Id="Trace.Verbose.File" LoggingMode="File" Name="Trace">
+      
+      <ProblemCategories>
+        <ProblemCategory Value="First Level Triage"/>
+      </ProblemCategories>
+      
+      <Collectors>        
+        <SystemCollectorId Value="SystemCollector">
+          <SystemProviderId Value="SystemProvider"/>
+        </SystemCollectorId>
+        
+        <EventCollectorId Value="EventCollector_UserMode">
+          <EventProviders>
+            <!-- Power -->
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PDC"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Pep"/>
+            <!-- UI Rendering-->
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Dwm-Core"/>
+            <EventProviderId Value="EventProvider_AvalonAll"/>
+            <EventProviderId Value="EventProvider_DWMWin7Provider"/>
+            <EventProviderId Value="EventProvider_DWMAPI"/>
+            <EventProviderId Value="EventProvider_DX"/>
+            <EventProviderId Value="EventProvider_DXC"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Win32k"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Immersive-Shell"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UxTheme"/>
+            <EventProviderId Value="EventProvider_ScheduleGuid"/>
+            <EventProviderId Value="EventProvider_Udwm"/>
+            <EventProviderId Value="EventProvider_DWMApiTracerProvider"/>
+            <EventProviderId Value="EventProvider_PerfTrack"/>
+            <EventProviderId Value="EventProvider_E3"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Dwm-CoreWin"/>
+          </EventProviders>
+        </EventCollectorId>
+        <EventCollectorId Value="EventCollector_UserMode_DXStacks">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DXC_Stacks"/>
+          </EventProviders>
+        </EventCollectorId>            
+      </Collectors>
+    </Profile>
+
+    <!-- Inherit everything from above profile, just change the logging mode to memory -->
+    <Profile Base="Trace.Verbose.File" Id="Trace.Verbose.Memory" Name="Trace" DetailLevel="Verbose" LoggingMode="Memory" Description="Trace events" />
+  </Profiles>
+  
+  <TraceMergeProperties>
+    <TraceMergeProperty
+        Id="TraceMerge_Default"
+        Name="TraceMerge_Default"
+        >
+      <CustomEvents>
+        <CustomEvent Value="ImageId"/>
+        <CustomEvent Value="BuildInfo"/>
+        <CustomEvent Value="VolumeMapping"/>
+        <CustomEvent Value="EventMetadata"/>
+        <CustomEvent Value="PerfTrackMetadata"/>
+        <CustomEvent Value="WinSAT"/>
+      </CustomEvents>
+    </TraceMergeProperty>
+  </TraceMergeProperties>
+  
+  
+</WindowsPerformanceRecorder>

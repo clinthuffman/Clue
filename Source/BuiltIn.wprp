@@ -1,0 +1,3811 @@
+<?xml version="1.0" encoding="utf-8" standalone='yes'?>
+<WindowsPerformanceRecorder Version="1.0" Author="EcoSystem Performance Platform" Team="EcoSystem Performance Platform" Company="Microsoft Corporation" Copyright="Microsoft Corporation" Tag="BuiltIn">
+  <Profiles>
+    <!-- System Collectors -->
+    <SystemCollector Id="SystemCollector_WPRSystemCollectorInFile" Base="" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="20"/>
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_WPRSystemCollectorInFileLarge" Base="" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="64" />
+      <StackCaching BucketCount="100" CacheSize="1024"/> 
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_WPRSystemCollectorInMemory" Base="SystemCollector_WPRSystemCollectorInFile">
+      <BufferSize Value="1024"/>
+      <Buffers Value="5" PercentageOfTotalMemory="true"/>
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_WPROnOffInFile" Base="" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="600"/>
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_WPRIEInFile" Base="SystemCollector_WPRSystemCollectorInFile" Realtime="false">
+      <BufferSize Value="1024"/>
+    </SystemCollector>
+    
+    <SystemCollector Id="SystemCollector_WPRResidentSetInFile" Base="SystemCollector_WPRSystemCollectorInFile" Realtime="false">
+      <Buffers Value="200"/>
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_DotNETRuntime" Name="NT Kernel Logger">
+      <BufferSize Value="256" />
+      <Buffers Value="160" />
+    </SystemCollector>
+
+    <SystemCollector Id="SystemCollector_WDF">
+      <BufferSize Value="1024" />
+      <Buffers Value="128" />
+    </SystemCollector>
+
+    <!-- Event Collectors -->
+    <EventCollector Id="EventCollector_WPREventCollectorInFile" Base="" Name="WPR Event Collector" Private="false" ProcessPrivate="false" Secure="false" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="20"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPREventCollectorInFileLarge" Base="" Name="WPR Event Collector" Private="false" ProcessPrivate="false" Secure="false" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="64"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPREventCollectorInMemorySmall" Base="EventCollector_WPREventCollectorInFile" Name="WPR Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="1" PercentageOfTotalMemory="true"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPREventCollectorInMemoryMedium" Base="EventCollector_WPREventCollectorInFile" Name="WPR Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="3" PercentageOfTotalMemory="true"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPREventCollectorInMemoryLarge" Base="EventCollector_WPREventCollectorInFile" Name="WPR Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="5" PercentageOfTotalMemory="true"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPROnOffInFile" Base="" Name="WPR OnOff Event Collector" Private="false" ProcessPrivate="false" Secure="false" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="20"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WPRJscriptEventCollectorWithStacks" Base="" Name="WPR JScript Event Collector with Stacks" Private="false" ProcessPrivate="false" Secure="false" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="64"/>
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_DotNETRuntime_Session" Name="DotNETRuntime_Session">
+      <BufferSize Value="1024" />
+      <Buffers Value="160" />
+    </EventCollector>
+
+    <EventCollector Id="EventCollector_WdfPerfTraceProvider" Name="Wdf PerfTraceProvider">
+      <BufferSize Value="64" />
+      <Buffers Value="4" />
+    </EventCollector>
+
+    <HeapEventCollector Id="HeapCollector_WPRHeapCollector" Name="WPR Internal Heap Collector" Secure="true" Realtime="false">
+      <BufferSize Value="1024" />
+      <Buffers Value="64" />
+    </HeapEventCollector>
+    <!-- System Providers -->
+    <SystemProvider Id="SystemProvider_Base" Base="">
+      <Keywords>
+        <Keyword Value="CpuConfig"/>
+        <Keyword Value="Loader"/>
+        <Keyword Value="ProcessThread"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_General_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="MemoryInfoWS"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="ProcessCounter"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_General" Base="SystemProvider_General_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="ProcessCreate"/>
+        <Stack Value="CSwitch"/>
+        <Stack Value="DiskFlushInit"/>
+        <Stack Value="DiskReadInit"/>
+        <Stack Value="DiskWriteInit"/>
+        <Stack Value="SampledProfile"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="ThreadDCEnd"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_CPU_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_CPU" Base="SystemProvider_CPU_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_DiskIO_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DiskIOInit"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="ProcessCounter"/>
+        <Keyword Value="SplitIO"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_DiskIO" Base="SystemProvider_DiskIO_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="DiskFlushInit"/>
+        <Stack Value="DiskReadInit"/>
+        <Stack Value="DiskWriteInit"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_FileIO_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="FileIO"/>
+        <Keyword Value="FileIOInit"/>
+        <Keyword Value="Filename"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="ProcessCounter"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+      </Keywords>
+      </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_FileIO" Base="SystemProvider_FileIO_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="FileCleanup"/>
+        <Stack Value="FileClose"/>
+        <Stack Value="FileCreate"/>
+        <Stack Value="FileDelete"/>
+        <Stack Value="FileDirEnum"/>
+        <Stack Value="FileDirNotify"/>
+        <Stack Value="FileFlush"/>
+        <Stack Value="FileFSCTL"/>
+        <Stack Value="FileOpEnd"/>
+        <Stack Value="FileQueryInformation"/>
+        <Stack Value="FileRead"/>
+        <Stack Value="FileRename"/>
+        <Stack Value="FileSetInformation"/>
+        <Stack Value="FileWrite"/>
+        <Stack Value="ThreadDCEnd"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Registry_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="ProcessCounter"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="Registry"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Registry" Base="SystemProvider_Registry_Without_Stacks">
+      <Stacks Operation="Set">
+        <Stack Value="RegistryCloseKey"/>
+        <Stack Value="RegistryCreateKey"/>
+        <Stack Value="RegistryDeleteKey"/>
+        <Stack Value="RegistryDeleteValue"/>
+        <Stack Value="RegistryEnumerateKey"/>
+        <Stack Value="RegistryEnumerateValueKey"/>
+        <Stack Value="RegistryFlush"/>
+        <Stack Value="RegistryKcbCreate"/>
+        <Stack Value="RegistryKcbDelete"/>
+        <Stack Value="RegistryOpenKey"/>
+        <Stack Value="RegistryQueryKey"/>
+        <Stack Value="RegistryQueryMultipleValue"/>
+        <Stack Value="RegistryQuerySecurity"/>
+        <Stack Value="RegistryQueryValue"/>
+        <Stack Value="RegistrySetInformation"/>
+        <Stack Value="RegistrySetValue"/>
+      </Stacks>
+    </SystemProvider>
+   
+    <SystemProvider Id="SystemProvider_Network_Without_Stacks" Base="SystemProvider_General_Without_Stacks" />
+
+    <SystemProvider Id="SystemProvider_Network" Base="SystemProvider_Network_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="DiskFlushInit"/>
+        <Stack Value="DiskReadInit"/>
+        <Stack Value="DiskWriteInit"/>
+        <Stack Value="SampledProfile"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="ThreadDCEnd"/>
+      </Stacks>    
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_ContiguousMemoryGeneration" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="ContiguousMemorygeneration"/>
+        <Keyword Value="MemoryInfo"/>
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="ContiguousMemoryGeneration"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Heap_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="MemoryInfoWS"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Heap" Base="SystemProvider_Heap_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="HeapAllocation"/>
+        <Stack Value="HeapReallocation"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Pool_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="MemoryInfoWS"/>
+        <Keyword Value="Pool"/>
+        <Keyword Value="SampledProfile"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Pool" Base="SystemProvider_Pool_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="PoolAllocation"/>
+        <Stack Value="PoolAllocationSession"/>
+        <Stack Value="PoolFree"/>
+        <Stack Value="PoolFreeSession"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_VirtualAllocation_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="MemoryInfoWS"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="VirtualAllocation"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_VirtualAllocation" Base="SystemProvider_VirtualAllocation_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="ProcessCreate"/>
+        <Stack Value="ThreadCreate"/>
+        <Stack Value="ThreadDCEnd"/>
+        <Stack Value="VirtualAllocation"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Audio_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="FileIO"/>
+        <Keyword Value="FileIOInit"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Audio" Base="SystemProvider_Audio_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="SampledProfile"/>
+        <Stack Value="ThreadDCEnd"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Video_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Video" Base="SystemProvider_Video_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="SampledProfile"/>
+        <Stack Value="ThreadDCEnd"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Power_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="ClockInterrupt"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="IdleStates"/>
+        <Keyword Value="InterProcessorInterrupt"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="KeClock"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="Timer"/>
+        <CustomKeyword Value="0x44000000"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Power" Base="SystemProvider_Power_Without_Stacks">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="ThreadPriority"/>
+        <Keyword Value="IdealProcessor"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+		<Stack Value="SampledProfile"/>
+        <Stack Value="TimerPeriodic"/>
+        <Stack Value="TimerOneShot"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_OnOffLight" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="MemoryInfo"/>
+        <Keyword Value="MemoryInfoWS"/>
+        <Keyword Value="Power"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_OnOffVerbose" Base="SystemProvider_OnOffLight">
+      <Keywords Operation="Add">
+        <Keyword Value="ReadyThread"/>
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_OnOffVerboseIO" Base="SystemProvider_OnOffLight">
+      <Keywords Operation="Add">
+        <Keyword Value="FileIO"/>
+        <Keyword Value="FileIOInit"/>
+        <Keyword Value="NetworkTrace"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="Registry"/>
+      </Keywords>
+      <Keywords Operation="Remove">
+        <Keyword Value="Power"/>
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="FileCreate"/>
+        <Stack Value="FileFlush"/>
+        <Stack Value="FileRead"/>
+        <Stack Value="FileWrite"/>
+        <Stack Value="RegistryOpenKey"/>
+        <Stack Value="RegistryQueryKey"/>
+        <Stack Value="RegistryQueryValue"/>
+        <Stack Value="SampledProfile"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_IE_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="CSwitch"/>
+        <Keyword Value="DiskIO"/>
+        <Keyword Value="FileIO"/>
+        <Keyword Value="FileIOInit"/>
+        <Keyword Value="DPC"/>
+        <Keyword Value="HardFaults"/>
+        <Keyword Value="Interrupt"/>
+        <Keyword Value="ReadyThread"/>
+        <Keyword Value="SampledProfile"/>
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+        <Keyword Value="MemoryInfo" />
+        <Keyword Value="MemoryInfoWS" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_IE" Base="SystemProvider_IE_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="CSwitch"/>
+        <Stack Value="FileClose"/>
+        <Stack Value="FileCreate"/>
+        <Stack Value="FileQueryInformation"/>
+        <Stack Value="FileRead"/>
+        <Stack Value="FileWrite"/>
+        <Stack Value="SampledProfile"/>
+        <Stack Value="ReadyThread"/>
+        <Stack Value="ImageLoad"/>
+        <Stack Value="ProcessCreate"/>
+        <Stack Value="ThreadCreate"/>
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Minifilter_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="DiskIO" />
+        <Keyword Value="Drivers" />
+        <Keyword Value="FileIO" />
+        <Keyword Value="FileIOInit" />
+        <Keyword Value="Filename" />
+        <Keyword Value="HardFaults" />
+        <Keyword Value="ProcessCounter" />
+        <Keyword Value="ThreadPriority" />
+        <Keyword Value="IdealProcessor" />
+        <Keyword Value="FilterIO" />
+        <Keyword Value="FilterIOFailure"/>
+        <Keyword Value="FilterIOFastIO" />
+        <Keyword Value="FilterIOInit" />
+        <Keyword Value="SampledProfile"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Minifilter" Base="SystemProvider_Minifilter_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="FileCleanup"/>
+        <Stack Value="FileClose"/>
+        <Stack Value="FileCreate"/>
+        <Stack Value="FileDelete"/>
+        <Stack Value="FileDirEnum"/>
+        <Stack Value="FileDirNotify"/>
+        <Stack Value="FileFlush"/>
+        <Stack Value="FileFSCTL"/>
+        <Stack Value="FileOpEnd"/>
+        <Stack Value="FileQueryInformation"/>
+        <Stack Value="FileRead"/>
+        <Stack Value="FileRename"/>
+        <Stack Value="FileSetInformation"/>
+        <Stack Value="FileWrite"/>
+        <Stack Value="MiniFilterPreOpInit"/>
+        <Stack Value="MiniFilterPostOpInit"/>
+      </Stacks>
+    </SystemProvider>
+
+   <SystemProvider Id="SystemProvider_GPU_normal">
+      <Keywords>
+        <Keyword Value="CSwitch" />
+        <Keyword Value="DiskIO" />
+        <Keyword Value="DPC" />
+        <Keyword Value="HardFaults" />
+        <Keyword Value="Interrupt" />
+        <Keyword Value="Loader" />
+        <Keyword Value="MemoryInfo" />
+        <Keyword Value="Power" />
+        <Keyword Value="ProcessThread" />
+        <Keyword Value="ReadyThread" />
+        <Keyword Value="SampledProfile" />
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+      <Stacks>
+        <Stack Value="CSwitch" />
+        <Stack Value="PagefaultHard" />
+        <Stack Value="SampledProfile" />
+      </Stacks>
+    </SystemProvider>
+    
+    <SystemProvider Id="SystemProvider_GPU_verbose" Base="SystemProvider_GPU_normal">
+      <Keywords Operation="Add">
+        <Keyword Value="SystemCall" />
+        <Keyword Value="AllFaults" />
+      </Keywords>
+    </SystemProvider>
+    
+    <SystemProvider Id="SystemProvider_Handle_Without_Stacks" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="Handle"/>
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_Handle" Base="SystemProvider_Handle_Without_Stacks">
+      <Stacks Operation="Add">
+        <Stack Value="HandleCreate"/>
+        <Stack Value="HandleClose"/>
+        <Stack Value="HandleDuplicate"/>
+      </Stacks>
+    </SystemProvider>
+    
+    <SystemProvider Id="SystemProvider_ReferenceSet" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="FootPrint" />
+        <Keyword Value="HardFaults" />
+        <Keyword Value="Memory" />
+        <Keyword Value="MemoryInfo" />
+        <Keyword Value="MemoryInfoWS" />
+        <Keyword Value="ReferenceSet" />
+        <Keyword Value="VirtualAllocation" />
+        <Keyword Value="VAMap" />
+        <Keyword Value="Session" />
+      </Keywords>
+      <Stacks Operation="Add">
+        <Stack Value="PageAccess" />
+        <Stack Value="PageAccessEx" />
+        <Stack Value="PageRelease" />
+        <Stack Value="PageRangeAccess" />
+        <Stack Value="PageRangeRelease" />
+        <Stack Value="PagefileMappedSectionCreate" />
+        <Stack Value="PagefileMappedSectionDelete" />
+        <Stack Value="VirtualAllocation" />
+        <Stack Value="VirtualFree" />
+      </Stacks>
+    </SystemProvider>
+    
+    <SystemProvider Id="SystemProvider_ResidentSet" Base="SystemProvider_Base">
+      <Keywords Operation="Add">
+        <Keyword Value="DiskIO" />
+        <Keyword Value="HardFaults" />
+        <Keyword Value="Memory" />
+        <Keyword Value="MemoryInfo" />
+        <Keyword Value="VirtualAllocation" />
+        <Keyword Value="VAMap" />
+        <Keyword Value="Session" />
+      </Keywords>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_DotNETRuntime">
+      <Keywords>
+        <Keyword Value="CSwitch" />
+        <Keyword Value="DiskIO" />
+        <Keyword Value="DiskIOInit" />
+        <Keyword Value="HardFaults" />
+        <Keyword Value="Loader" />
+        <Keyword Value="MemoryInfo" />
+        <Keyword Value="MemoryInfoWS" />
+        <Keyword Value="NetworkTrace" />
+        <Keyword Value="ProcessCounter" />
+        <Keyword Value="ProcessThread" />
+        <Keyword Value="SampledProfile" />
+      </Keywords>
+      <Stacks>
+        <Stack Value="CSwitch" />
+        <Stack Value="SampledProfile" />
+        <Stack Value="ImageLoad" />
+        <Stack Value="ImageUnload" />
+        <Stack Value="ProcessCreate" />
+        <Stack Value="DiskReadInit" />
+        <Stack Value="DiskWriteInit" />
+        <Stack Value="DiskFlushInit" />
+        <Stack Value="FileCreate" />
+        <Stack Value="FileRead" />
+        <Stack Value="FileWrite" />
+        <Stack Value="ReadyThread" />
+      </Stacks>
+    </SystemProvider>
+
+    <SystemProvider Id="SystemProvider_WDF">
+      <Keywords>
+        <Keyword Value="Loader" />
+        <Keyword Value="ProcessThread" />
+        <Keyword Value="SampledProfile" />
+        <Keyword Value="WDFDPC" />
+        <Keyword Value="WDFInterrupt" />
+      </Keywords>
+      <Stacks>
+        <Stack Value="SampledProfile" />
+      </Stacks>
+    </SystemProvider>
+
+    <!-- Event Providers -->
+    <EventProvider Id="EventProvider_WPR_Status" Name="36b6f488-aad7-48c2-afe3-d4ec2c8b46fa">
+      <Keywords>
+        <Keyword Value="0x10000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft_Windows_Performance_Recorder_Context" Name="b7a19fcd-15ba-41ba-a3d7-dc352d5f79ba" NonPagedMemory="true" Strict="true"/>
+    
+    <EventProvider Id="EventProvider_PerfTrack" Name="PerfTrack" NonPagedMemory="true" Level="4" />
+
+    <EventProvider Id="EventProvider_UTC" Name="UTC" NonPagedMemory="true" EventKey="true" Level="4"/>
+
+    <EventProvider Id="EventProvider_DotNetProvider" Name="DotNetProvider" NonPagedMemory="true" Level="5">
+      <Keywords>
+        <Keyword Value="0x20098"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0x20118"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-JScript" Name="57277741-3638-4A4B-BDBA-0AC6E45DA56C">
+      <Keywords>
+        <Keyword Value="0x1"/>
+      </Keywords>
+      <CaptureStateOnSave>
+        <Keyword Value="0x4"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-EventTracing" Name="b675ec37-bdb6-4648-bc92-f3fdc74d3ca2" Level="15" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x40"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-NCSI" Base="" Name="Microsoft-Windows-NCSI" />
+
+    <EventProvider Id="EventProvider_DX_Audio" Name="DX" NonPagedMemory="true" Level="5">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DX_Video" Name="DX" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x2f"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DXVA2" Base="" Name="DXVA2" NonPagedMemory="true" Level="5" />
+
+    <EventProvider Id="EventProvider_DWMRedirLevel5" Base="" Name="DWMRedir" NonPagedMemory="true" Level="5" />
+
+    <EventProvider Id="EventProvider_DWMRedirLevel6" Base="" Name="DWMRedir" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMAPITracerLevel6" Base="" Name="DWMAPITracer" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMLevel6" Base="" Name="DWM" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMWin32k" Base="" Name="e7ef96be-969f-414f-97d7-3ddb7b558ccc" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x2000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMWin32kWin8" Base="" Name="8c416c79-d49b-4f01-a467-e56d3aa8234c" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x2000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMWin32kWin8_WaitAnalysis" Base="EventProvider_DWMWin32kWin8" Name="8c416c79-d49b-4f01-a467-e56d3aa8234c" NonPagedMemory="true" Stack="true">
+      <Keywords Operation="Add">
+        <Keyword Value="0x400000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMSchedulerLevel6" Base="" Name="DWMScheduler" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMSchedulerFilteredLevel6" Base="EventProvider_DWMSchedulerLevel6" Name="DWMScheduler">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMSchedulerWin7Level6" Base="" Name="8c9dd1ad-e6e5-4b07-b455-684a9d879900" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMSchedulerWin7FilteredLevel6" Base="EventProvider_DWMSchedulerWin7Level6" Name="8c9dd1ad-e6e5-4b07-b455-684a9d879900">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMSchedulerWin8Level6" Base="" Name="9e9bba3c-2e38-40cb-99f4-9e8281425164" NonPagedMemory="true" Level="6" />
+
+    <EventProvider Id="EventProvider_DWMSchedulerWin8FilteredLevel6" Base="EventProvider_DWMSchedulerWin8Level6" Name="9e9bba3c-2e38-40cb-99f4-9e8281425164">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMCoreWin7" Base="" Name="8c9dd1ad-e6e5-4b07-b455-684a9d879900" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMCoreWin8" Base="" Name="9e9bba3c-2e38-40cb-99f4-9e8281425164" NonPagedMemory="true" Level="6">
+      <Keywords>
+        <Keyword Value="0x1ffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_MMCSSLevel5" Base="" Name="MMCSS" Level="5" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-AppSruProv" Name="0CC157B3-CF07-4FC2-91EE-31AC92E05FE1">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-DesktopActivityModerator" Name="Microsoft-Windows-DesktopActivityModerator">
+      <Keywords>
+        <Keyword Value="0xFFFFFFDF" />
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-DesktopWindowManager-Diag" Name="Microsoft-Windows-DesktopWindowManager-Diag">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Dhcp-Client" Name="Microsoft-Windows-Dhcp-Client">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack" Name="Microsoft-Windows-Diagnostics-PerfTrack" Level="4">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+	
+    <EventProvider Id="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters" Name="Microsoft-Windows-Diagnostics-PerfTrack-Counters">
+      <Keywords>
+        <Keyword Value="0x0" />
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Display" Name="Microsoft-Windows-Display">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-DxgKrnl" Name="Microsoft-Windows-DxgKrnl">
+      <Keywords>
+        <Keyword Value="0x200" />
+      </Keywords>
+    </EventProvider>
+	
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Process" Name="Microsoft-Windows-Kernel-Process">
+	  <Keywords>
+	    <Keyword Value ="0x0" />
+	  </Keywords>
+	</EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NDIS_Light" Name="Microsoft-Windows-NDIS" NonPagedMemory="true" Level="4">
+      <Keywords>
+        <Keyword Value="0x10"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NDIS" Name="Microsoft-Windows-NDIS" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Network-Connection-Broker" Name="Microsoft-Windows-Network-Connection-Broker">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-Networking-RealTimeCommunication" Name="Microsoft-Windows-Networking-RealTimeCommunication" Level="255">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NetworkProfile" Name="Microsoft-Windows-NetworkProfile">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-PDC" Name="Microsoft-Windows-PDC">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft.Windows.PDC_TraceLogging" Name="D29624CA-200F-44BB-9471-13B01EA15B9E">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Power-CAD" Name="DABA4D32-CC40-4266-BB95-C30344DBC680" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging" Name="4CAAD201-C882-42C1-AE13-5408E834517B" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-PushNotifications-Platform" Name="Microsoft-Windows-PushNotifications-Platform">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-Runtime-Networking-BackgroundTransfer" Name="Microsoft-Windows-Runtime-Networking-BackgroundTransfer">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Search-Core" Name="Microsoft-Windows-Search-Core" />
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-SleepStudy" Name="Microsoft-Windows-SleepStudy">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-SrumTelemetry" Name="48D445A8-2F64-4D49-B093-A5774D8DC531">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft.Windows.Kernel.Power_TraceLogging" Name="63BCA7A1-77EC-4EA7-95D0-98D3F0C0EBF7">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft.Windows.Power.Battery_TraceLogging" Name="E94614D1-95AA-4BD6-87F8-B6967917F7AF">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft.Windows.Power.Toast_TraceLogging" Name="4F56280A-220A-441E-84EE-C32E60BE65C5">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-UserModePowerService" Name="Microsoft-Windows-UserModePowerService" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Win32k" Name="Microsoft-Windows-Win32k" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-WindowsUpdateClient" Name="Microsoft-Windows-WindowsUpdateClient">
+	  <Keywords>
+	    <Keyword Value="0x0"/>
+	  </Keywords>
+	</EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-WLAN-AutoConfig" Name="Microsoft-Windows-WLAN-AutoConfig">
+      <Keywords>
+        <Keyword Value="0x200"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-COMRuntime" Name="Microsoft-Windows-COMRuntime">
+      <Keywords>
+        <Keyword Value="0x3"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Firewall" Name="Microsoft-Windows-Firewall"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-TCPIP" Name="Microsoft-Windows-TCPIP">
+      <Keywords>
+       <Keyword Value="0x80"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-TCPIP-Level4" Name="Microsoft-Windows-TCPIP" Level="4"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-TCPIP-Verbose" Name="Microsoft-Windows-TCPIP"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-RPC" Name="Microsoft-Windows-RPC" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Networking-Correlation" Name="Microsoft-Windows-Networking-Correlation" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-MediaEngine-Level4" Name="8f2048e0-f260-4f57-a8d1-932376291682" Level="4"/>
+
+    <EventProvider Id="EventProvider_AudioEngine" Name="AudioEngine" Level="2">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_AudioEngineVerbose" Name="AudioEngine" Level="3">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_AudioEngineCritical" Name="AudioEngine" Level="1">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_AvalonPerfLevel6" Name="Avalon" Level="6" />
+
+    <EventProvider Id="EventProvider_DShow_Audio" Name="DShow"  Level="5" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0xffff"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DShow_Video" Name="DShow" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x2f"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_MediaFoundation" Name="MediaFoundation" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-RPC_Level4" Name="Microsoft-Windows-RPC" Level="4" Stack="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-RPC_Level4_Without_Stacks" Name="Microsoft-Windows-RPC" Level="4"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-RPCSS_Level4_Without_Stacks" Name="Microsoft-Windows-RPCSS" Level="4"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-RPCSS_Level4" Name="Microsoft-Windows-RPCSS" Level="4" Stack="true" />
+    
+    <EventProvider Id="EventProvider_Win32HeapRanges" Name="Win32HeapRanges" />
+
+    <!-- On/Off Event Providers -->
+    <EventProvider Id="EventProvider_Microsoft-Windows-Services" Name="Microsoft-Windows-Services" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Services-Svchost" Name="Microsoft-Windows-Services-Svchost" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Services-TraceLogging" Name="b8ddcea7-b520-4909-bceb-e0170c9f0e99" >
+      <Keywords>
+        <Keyword Value="0x0000200000000000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Winlogon" Name="Microsoft-Windows-Winlogon" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_KernelPnP" Name="Microsoft-Windows-Kernel-PnP" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x20"/>
+        <Keyword Value="0x1000"/>
+        <Keyword Value="0x2000"/>
+        <Keyword Value="0x4000"/>
+        <Keyword Value="0x8000"/>
+        <Keyword Value="0x10000"/>
+        <Keyword Value="0x20000"/>
+        <Keyword Value="0x40000"/>
+        <Keyword Value="0x80000"/>
+        <Keyword Value="0x100000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Prefetch" Name="Microsoft-Windows-Kernel-Prefetch" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Subsys-SMSS" Name="Microsoft-Windows-Subsys-SMSS" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-TaskScheduler" Name="Microsoft-Windows-TaskScheduler" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-GroupPolicy" Name="Microsoft-Windows-GroupPolicy" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-General" Name="Microsoft-Windows-Kernel-General" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_PerfTrackStatus" Name="PerfTrackStatus" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_SearchCore" Name="Microsoft-Windows-Search-Core" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Shell-Core" Name="Microsoft-Windows-Shell-Core" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Shell-Core_WDI" Name="Microsoft-Windows-Shell-Core" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x10000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Shell-AuthUI" Name="Microsoft-Windows-Shell-AuthUI" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_SoftwareLicensingV6" Name="SoftwareLicensingV6" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Security-SPP" Name="Microsoft-Windows-Security-SPP" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-CodeIntegrity" Name="Microsoft-Windows-CodeIntegrity" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-VolumeSnapshot-Driver" Name="Microsoft-Windows-VolumeSnapshot-Driver" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-ReadyBoost" Name="Microsoft-Windows-ReadyBoost" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_LoaderInfo" Name="LoaderInfo" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Wininit" Name="Microsoft-Windows-Wininit" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Subsys-Csr" Name="Microsoft-Windows-Subsys-Csr" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Power" Name="Microsoft-Windows-Kernel-Power" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Processor-Power" Name="Microsoft-Windows-Kernel-Processor-Power" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Pep" Name="5412704e-b2e1-4624-8ffd-55777b8f7373" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Acpi" Name="c514638f-7723-485b-bcfc-96565d735d4a" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Battery" Name="59819d0a-adaf-46b2-8d7c-990bc39c7c15" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+
+    <EventProvider Id="EventProvider_Microsoft.Windows.Battery_TraceLogging" Name="BDF49C6C-ED22-442B-BF90-68CDD1808E2E" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-USB-USBHUB" Name="7426a56b-e2d5-4b30-bdef-b31815c1a74a" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-USB-USBPORT" Name="c88a4ef5-d048-4013-9408-e04b7db2814a" NonPagedMemory="true" >
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>    
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Winsrv" Name="Microsoft-Windows-Winsrv" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-ReadyBoostDriver" Name="Microsoft-Windows-ReadyBoostDriver" NonPagedMemory="true" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Immersive-Shell" Name="315a8872-923e-4ea2-9889-33cd4754bf64" NonPagedMemory="true" Level="4">
+      <Keywords>
+        <Keyword Value="0x100000"/>
+      </Keywords>
+    </EventProvider>
+
+	<EventProvider Id="EventProvider_Microsoft-Windows-Immersive-Shell_Verbose" Name="315a8872-923e-4ea2-9889-33cd4754bf64" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x0"/>
+      </Keywords>
+    </EventProvider>
+	
+    <EventProvider Id="EventProvider_PSM-Wpp-Provider" Name="4a743cbb-3286-435c-a674-b428328940e4" Level="255">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+
+
+    <!-- Capture States -->
+    <EventProvider Id="EventProvider_DWMWin32k_CaptureState" Base="" Name="e7ef96be-969f-414f-97d7-3ddb7b558ccc" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x80000"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMWin32kWin8_CaptureState" Base="" Name="8c416c79-d49b-4f01-a467-e56d3aa8234c" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x80000"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" Base="" Name="8c416c79-d49b-4f01-a467-e56d3aa8234c" NonPagedMemory="true" CaptureStateOnly="true" Stack="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x80000"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-BrokerInfrastructure_CaptureState" Name="e6835967-e0d2-41fb-bcec-58387404e25a" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-DesktopWindowManager-Diag_CaptureState" Name="Microsoft-Windows-DesktopWindowManager-Diag" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Dhcp-Client_CaptureState" Name="Microsoft-Windows-Dhcp-Client" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+	
+    <EventProvider Id="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters_CaptureState" Name="Microsoft-Windows-Diagnostics-PerfTrack-Counters" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0" />
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Display_CaptureState" Name="Microsoft-Windows-Display" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NDIS_CaptureState_Light" Name="Microsoft-Windows-NDIS" Level="4" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x10"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NDIS_CaptureState" Name="Microsoft-Windows-NDIS" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Network-Connection-Broker_CaptureState" Name="Microsoft-Windows-Network-Connection-Broker" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-NetworkProfile_CaptureState" Name="Microsoft-Windows-NetworkProfile" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-PDC_CaptureState" Name="Microsoft-Windows-PDC" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Power-CAD_CaptureState" Name="DABA4D32-CC40-4266-BB95-C30344DBC680" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging_CaptureState" Name="4CAAD201-C882-42C1-AE13-5408E834517B" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-ProcessStateManager_CaptureState" Name="d49918cf-9489-4bf1-9d7b-014d864cf71f" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-PushNotifications-Platform_CaptureState" Name="Microsoft-Windows-PushNotifications-Platform" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-ReadyBoostDriver_CaptureState" Name="Microsoft-Windows-ReadyBoostDriver" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x10"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-SleepStudy_CaptureState" Name="Microsoft-Windows-SleepStudy" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-StoreMgr_CaptureState" Name="Microsoft-Windows-Kernel-StoreMgr" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x10"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" Name="Microsoft-Windows-UserModePowerService" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Win32k_CaptureState" Name="Microsoft-Windows-Win32k" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Power_CaptureState" Name="Microsoft-Windows-Kernel-Power" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" Name="Microsoft-Windows-Kernel-Processor-Power" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Pep_CaptureState" Name="5412704e-b2e1-4624-8ffd-55777b8f7373" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Acpi_CaptureState" Name="c514638f-7723-485b-bcfc-96565d735d4a" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+    <EventProvider Id="EventProvider_Microsoft-Windows-Battery_CaptureState" Name="59819d0a-adaf-46b2-8d7c-990bc39c7c15" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft.Windows.Battery_TraceLogging_CaptureState" Name="BDF49C6C-ED22-442B-BF90-68CDD1808E2E" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-USB-USBHUB_CaptureState" Name="7426a56b-e2d5-4b30-bdef-b31815c1a74a" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-USB-USBPORT_CaptureState" Name="c88a4ef5-d048-4013-9408-e04b7db2814a" NonPagedMemory="true" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x0"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+    
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-DxgKrnl_CaptureState" Name="Microsoft-Windows-DxgKrnl" NonPagedMemory="true" CaptureStateOnly="true" Level="5">
+      <CaptureStateOnSave>
+        <Keyword Value="0x67"/>
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_IE" Name="9e3b3947-ca5d-4614-91a2-7b624e0e7244">
+      <Keywords>
+        <Keyword Value="0x1300"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_IEFrame" Name="5c8bb950-959e-4309-8908-67961a1205d5">
+      <Keywords>
+        <Keyword Value="0x100"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Edge" Name="dd8145c3-94dd-5a74-8a14-1342d560f437">
+      <Keywords>
+        <Keyword Value="0x100"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-WebRuntime" Name="aca8c642-aa1b-5da1-c959-c756c873ceac">
+      <Keywords>
+        <Keyword Value="0x100"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Diagnostics-LoggingChannel" Name="4bd2826e-54a1-4ba9-bf63-92b73ea1ac4a" Strict="false"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-WinINet" Name="Microsoft-Windows-WinINet">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFFFFFFFFFF"/>
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_Microsoft-Windows-DNS-Client" Name="Microsoft-Windows-DNS-Client" />
+    <EventProvider Id="EventProvider_IE7" Name="IE7" />
+    <EventProvider Id="EventProvider_IE8" Name="9e3b3947-ca5d-4614-91a2-7b624e0e7244" />
+
+    <EventProvider Id="EventProvider_DX_ForGPUView" Name="DX" NonPagedMemory="true">
+      <Keywords>
+        <Keyword Value="0x2F" />
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="Microsoft-Windows-DxgKrnl_stacks" Name="802ec45a-1e99-4b83-9920-87c98277ba9d" Stack="true" Level="5" NonPagedMemory="true" Strict="true">
+      <Keywords>
+        <Keyword Value="0x40" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0x40"/>
+      </CaptureStateOnStart>
+    </EventProvider>
+    
+    <EventProvider Id="Microsoft-Windows-DxgKrnl_normal" Name="802ec45a-1e99-4b83-9920-87c98277ba9d" Level="5" NonPagedMemory="true" Strict="true">
+      <Keywords>
+        <Keyword Value="0x237" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0x237"/>
+      </CaptureStateOnStart>
+    </EventProvider>
+
+    <EventProvider Id="Microsoft-Windows-DxgKrnl_light" Name="802ec45a-1e99-4b83-9920-87c98277ba9d" Level="5" NonPagedMemory="true" Strict="true">
+      <Keywords>
+        <Keyword Value="0x25" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0x25"/>
+      </CaptureStateOnStart>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_a688ee40-d8d9-4736-b6f9-6b74935ba3b1" Name="a688ee40-d8d9-4736-b6f9-6b74935ba3b1" Level="5" >
+      <Keywords>
+        <Keyword Value="0xFFFF" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0xFFFF"/>
+      </CaptureStateOnStart>      
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_DXGI" Name="CA11C036-0102-4A2D-A6AD-F03CFED5D3C9" Stack="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xF" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0xF"/>
+      </CaptureStateOnStart>      
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Direct3D11" Name="db6f6ddb-ac77-4e88-8253-819df9bbf140" Stack="true" Level="6">
+      <Keywords>
+        <Keyword Value="0xF" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0xF"/>
+      </CaptureStateOnStart>      
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-D3D10Level9" Name="7E7D3382-023C-43cb-95D2-6F0CA6D70381">
+      <Keywords>
+        <Keyword Value="0x1" />
+      </Keywords>
+      <CaptureStateOnStart>
+        <Keyword Value="0x1"/>
+      </CaptureStateOnStart>      
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Antimalware-Engine" Name="0a002690-3839-4e3a-b3b6-96d8df868d99" Level="5"/>
+    <EventProvider Id="EventProvider_Microsoft-Antimalware-Service" Name="751ef305-6c6e-4fed-b847-02ef79d26aef"/>
+    <EventProvider Id="EventProvider_Microsoft-Antimalware-RTP" Name="8e92deef-5e17-413b-b927-59b2f06a3cfc"/>
+    <EventProvider Id="EventProvider_Microsoft-Antimalware-AMFilter" Name="cfeb0608-330e-4410-b00d-56d8da9986e6"/>
+    <EventProvider Id="EventProvider_Microsoft-Antimalware-Protection" Name="e4b70372-261f-4c54-8fa6-a5a7914d73da"/>
+
+    <EventProvider Id="EventProvider_JSHeapDump" Name="7f8e35ca-68e8-41b9-86fe-d6adc5b327e7" >
+       <Keywords>
+         <Keyword Value="0x20"/>
+       </Keywords>
+       <CaptureStateOnDemand Timeout="0">
+         <Keyword Value="0x20"/>
+       </CaptureStateOnDemand>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-ProcessStateManager" Name="d49918cf-9489-4bf1-9d7b-014d864cf71f"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-BrokerInfrastructure" Name="e6835967-e0d2-41fb-bcec-58387404e25a">
+       <Keywords>
+         <Keyword Value="0x1"/>   
+       </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_JSscriptAlloc" Name="57277741-3638-4A4B-BDBA-0AC6E45DA56C" Stack="true">
+      <Keywords>
+        <Keyword Value="0x800"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_MemoryGC" Name="57277741-3638-4A4B-BDBA-0AC6E45DA56C" Stack="true">
+      <Keywords>
+        <Keyword Value="0x400000"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-XAML" Name="531a35ab-63ce-4bcf-aa98-f88c7a89e455">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFFFFFFFFFF"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-DirectComposition" Name="c44219d0-f344-11df-a5e2-b307dfd72085">
+      <Keywords>
+        <Keyword Value="0x4"/>
+      </Keywords>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-URLMon" Name="245f975d-909d-49ed-b8f9-9a75691d6b6b"/>
+
+    <EventProvider Id="EventProvider_DotNETRuntime" Name="E13C0D23-CCBC-4E12-931B-D9CC2EEE27E4" Level="5">
+      <Keywords>
+        <Keyword Value="0x4007CCBD" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_DotNETNativeRuntime" Name="47c3ba0c-77f1-4eb0-8d4d-aef447f16a85" Stack="true" Level="5">
+      <Keywords>
+        <Keyword Value="0x4007CCBD" />
+      </Keywords>
+    </EventProvider>  
+    <EventProvider Id="EventProvider_DotNETRuntimePrivate" Name="763fd754-7086-4dfe-95eb-c01a46faf4ca" Level="4">
+      <Keywords>
+        <Keyword Value="0x1" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_IIS" Name="de4649c9-15e8-4fea-9d85-1cdda520c334" Level="0">
+      <Keywords>
+        <Keyword Value="0x0" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_Silverlight" Name="AA087E0E-0B35-4e28-8F3A-440C3F51EEF1" Level="5">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_WPF" Name="E13B77A8-14B6-11DE-8069-001B212B5009" Level="17">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_ASPNet" Name="AFF081FE-0247-4275-9C4E-021F3DC1DA35" Level="5">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_TPL" Name="2e5dba47-a3d2-4d16-8ee0-6671ffdcd7b5" Stack="true" Level="5">
+      <Keywords>
+        <Keyword Value="0xFFFFFFFF" />
+      </Keywords>
+    </EventProvider>
+    <EventProvider Id="EventProvider_DotNETRuntime_CaptureState" Name="E13C0D23-CCBC-4E12-931B-D9CC2EEE27E4" Level="5" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x70138" />
+      </CaptureStateOnSave>
+    </EventProvider>
+    <EventProvider Id="EventProvider_DotNETRuntimeRundown_CaptureState" Name="a669021c-c450-4609-a035-5af59af4df18" Level="5" CaptureStateOnly="true">
+      <CaptureStateOnSave>
+        <Keyword Value="0x70138" />
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_UMDFReflector" Name="263dd596-513b-4fd9-969c-022b691bb130" NonPagedMemory="true"> 
+      <CaptureStateOnSave>
+        <Keyword Value="0" />
+      </CaptureStateOnSave>
+    </EventProvider>
+
+    <EventProvider Id="EventProvider_KMDF" Name="486A5C7C-11CC-46C5-9DE7-43DFE0BB57C1" NonPagedMemory="true"/>
+
+    <EventProvider Id="EventProvider_UMDFxV2" Name="9FA5DD5D-999E-466A-8CA9-7B3A66F8882F" />
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-App-Browser" Name="0bca4784-8257-51a0-d9ec-24fe1fe4c90d"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Web-Platform" Name="ff32ada1-5a4b-583c-889e-a3c027b201f5"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Storport" Name="C4636A1E-7986-4646-BF10-7BC3B4A76E8E"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Heap-Snapshot" Name="901d2afa-4ff6-46d7-8d0e-53645e1a47f5"/>
+
+    <EventProvider Id="EventProvider_Microsoft-Windows-Energy-Estimation-Engine" Name="DDCC3826-A68A-4E0D-BCFD-9C06C27C6948">
+      <Keywords>
+        <Keyword Value="0x4"/>
+      </Keywords>
+    </EventProvider>
+
+    <HeapEventProvider Id="WPRInternalHeapProvider">
+      <HeapProcessIds>
+        <HeapProcessId Value="0" />
+      </HeapProcessIds>
+    </HeapEventProvider>
+
+    <!-- Profiles -->
+    <Profile Id="BaseProfile.Light" Name="BaseProfile" Description="BaseProfile" DetailLevel="Light" Base="" LoggingMode="File" Internal="true">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_WPR_Status" />
+            <EventProviderId Value="EventProvider_Microsoft_Windows_Performance_Recorder_Context" />
+            <EventProviderId Value="EventProvider_PerfTrack" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-EventTracing" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+      <TraceMergeProperties>
+        <TraceMergeProperty Id="BaseLightTraceMergeProperties" Name="BaseTraceMergeProperties" Base="">
+          <DeletePreMergedTraceFiles Value="true"/>
+          <CustomEvents>
+            <CustomEvent Value="ImageId"/>
+            <CustomEvent Value="BuildInfo"/>
+            <CustomEvent Value="VolumeMapping"/>
+            <CustomEvent Value="EventMetadata"/>
+            <CustomEvent Value="PerfTrackMetadata"/>
+            <CustomEvent Value="WinSAT"/>
+            <CustomEvent Value="NetworkInterface"/>
+          </CustomEvents>
+        </TraceMergeProperty>
+      </TraceMergeProperties>
+    </Profile>
+
+    <Profile Id="BaseProfile.Verbose" Name="BaseProfile" Description="BaseProfile" DetailLevel="Verbose" Base="" LoggingMode="File" Internal="true">
+      <Collectors>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_WPR_Status" />
+            <EventProviderId Value="EventProvider_Microsoft_Windows_Performance_Recorder_Context" />
+            <EventProviderId Value="EventProvider_PerfTrack" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-EventTracing" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+      <TraceMergeProperties>
+        <TraceMergeProperty Id="BaseVerboseTraceMergeProperties" Name="BaseTraceMergeProperties" Base="">
+          <DeletePreMergedTraceFiles Value="true"/>
+          <CustomEvents>
+            <CustomEvent Value="ImageId"/>
+            <CustomEvent Value="BuildInfo"/>
+            <CustomEvent Value="VolumeMapping"/>
+            <CustomEvent Value="EventMetadata"/>
+            <CustomEvent Value="PerfTrackMetadata"/>
+            <CustomEvent Value="WinSAT"/>
+            <CustomEvent Value="NetworkInterface"/>
+          </CustomEvents>
+        </TraceMergeProperty>
+      </TraceMergeProperties>
+    </Profile>
+
+    <Profile Id="GeneralProfile.Verbose.File" Name="GeneralProfile" Description="@WindowsPerformanceRecorderControl.dll,-5001" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6004"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_General" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-COMRuntime" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-StoreMgr_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Search-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Immersive-Shell" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+            <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Power_AC-DC-State" Name="Microsoft-Windows-Kernel-Power" NonPagedMemory="true">
+              <Keywords>
+                <Keyword Value="0x4"/> <!-- po:Diagnostic -->
+              </Keywords>
+              <CaptureStateOnSave>
+                <Keyword Value="0x4"/> <!-- po:Diagnostic -->
+              </CaptureStateOnSave>
+            </EventProvider>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="GeneralProfile.Verbose.Memory" Name="GeneralProfile" Description="@WindowsPerformanceRecorderControl.dll,-5001" DetailLevel="Verbose" Base="GeneralProfile.Verbose.File" LoggingMode="Memory" Default="true">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <BufferSize Value="1024"/>
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+
+    <Profile Id="GeneralProfile.Light.File" Name="GeneralProfile" Description="@WindowsPerformanceRecorderControl.dll,-5001" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6004"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_General_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8"/>
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-COMRuntime" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-StoreMgr_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Search-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Immersive-Shell" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+            <EventProvider Id="EventProvider_Microsoft-Windows-Kernel-Power_AC-DC-State" Name="Microsoft-Windows-Kernel-Power" NonPagedMemory="true">
+              <Keywords>
+                <Keyword Value="0x4"/> <!-- po:Diagnostic -->
+              </Keywords>
+              <CaptureStateOnSave>
+                <Keyword Value="0x4"/> <!-- po:Diagnostic -->
+              </CaptureStateOnSave>
+            </EventProvider>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="GeneralProfile.Light.Memory" Name="GeneralProfile" Description="@WindowsPerformanceRecorderControl.dll,-5001" DetailLevel="Light" Base="GeneralProfile.Light.File" LoggingMode="Memory" Default="true">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <BufferSize Value="1024"/>
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="CPU.Light.File" Name="CPU" Description="@WindowsPerformanceRecorderControl.dll,-5002" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_CPU_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4_Without_Stacks"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4_Without_Stacks"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="CPU.Light.Memory" Name="CPU" Description="@WindowsPerformanceRecorderControl.dll,-5002" DetailLevel="Light" Base="CPU.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="CPU.Verbose.File" Name="CPU" Description="@WindowsPerformanceRecorderControl.dll,-5002" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_CPU" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="CPU.Verbose.Memory" Name="CPU" Description="@WindowsPerformanceRecorderControl.dll,-5002" DetailLevel="Verbose" Base="CPU.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DiskIO.Light.File" Name="DiskIO" Description="@WindowsPerformanceRecorderControl.dll,-5003" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_DiskIO_Without_Stacks" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DiskIO.Light.Memory" Name="DiskIO" Description="@WindowsPerformanceRecorderControl.dll,-5003" DetailLevel="Light" Base="DiskIO.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+
+    <Profile Id="DiskIO.Verbose.File" Name="DiskIO" Description="@WindowsPerformanceRecorderControl.dll,-5003" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_DiskIO" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Storport" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DiskIO.Verbose.Memory" Name="DiskIO" Description="@WindowsPerformanceRecorderControl.dll,-5003" DetailLevel="Verbose" Base="DiskIO.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Storport" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="FileIO.Light.File" Name="FileIO" Description="@WindowsPerformanceRecorderControl.dll,-5004" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_FileIO_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="FileIO.Light.Memory" Name="FileIO" Description="@WindowsPerformanceRecorderControl.dll,-5004" DetailLevel="Light" Base="FileIO.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="FileIO.Verbose.File" Name="FileIO" Description="@WindowsPerformanceRecorderControl.dll,-5004" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_FileIO" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="FileIO.Verbose.Memory" Name="FileIO" Description="@WindowsPerformanceRecorderControl.dll,-5004" DetailLevel="Verbose" Base="FileIO.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Registry.Light.File" Name="Registry" Description="@WindowsPerformanceRecorderControl.dll,-5005" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Registry_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Registry.Light.Memory" Name="Registry" Description="@WindowsPerformanceRecorderControl.dll,-5005" DetailLevel="Light" Base="Registry.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Registry.Verbose.File" Name="Registry" Description="@WindowsPerformanceRecorderControl.dll,-5005" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Registry" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Registry.Verbose.Memory" Name="Registry" Description="@WindowsPerformanceRecorderControl.dll,-5005" DetailLevel="Verbose" Base="Registry.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Network.Light.File" Name="Network" Description="@WindowsPerformanceRecorderControl.dll,-5006" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Network_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-COMRuntime" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Search-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TCPIP" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Network.Light.Memory" Name="Network" Description="@WindowsPerformanceRecorderControl.dll,-5006" DetailLevel="Light" Base="Network.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Network.Verbose.File" Name="Network" Description="@WindowsPerformanceRecorderControl.dll,-5006" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Network" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-COMRuntime" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Search-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TCPIP-Verbose" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Network.Verbose.Memory" Name="Network" Description="@WindowsPerformanceRecorderControl.dll,-5006" DetailLevel="Verbose" Base="Network.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>    
+
+    <Profile Id="Heap.Light.File" Name="Heap" Description="@WindowsPerformanceRecorderControl.dll,-5007" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Heap_Without_Stacks" />
+        </SystemCollectorId>
+        <HeapEventCollectorId Value="HeapCollector_WPRHeapCollector">
+          <HeapEventProviders>
+            <HeapEventProviderId Value="WPRInternalHeapProvider" />
+          </HeapEventProviders>
+        </HeapEventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Heap.Light.Memory" Name="Heap" Description="@WindowsPerformanceRecorderControl.dll,-5007" DetailLevel="Light" Base="Heap.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Heap.Verbose.File" Name="Heap" Description="@WindowsPerformanceRecorderControl.dll,-5007" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Heap" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_MemoryGC" />
+          </EventProviders>
+        </EventCollectorId>
+        <HeapEventCollectorId Value="HeapCollector_WPRHeapCollector">
+          <HeapEventProviders>
+            <HeapEventProviderId Value="WPRInternalHeapProvider" />
+          </HeapEventProviders>
+        </HeapEventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Heap.Verbose.Memory" Name="Heap" Description="@WindowsPerformanceRecorderControl.dll,-5007" DetailLevel="Verbose" Base="Heap.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Pool.Light.File" Name="Pool" Description="@WindowsPerformanceRecorderControl.dll,-5008" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Pool_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-StoreMgr_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver_CaptureState" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Pool.Light.Memory" Name="Pool" Description="@WindowsPerformanceRecorderControl.dll,-5008" DetailLevel="Light" Base="Pool.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="Pool.Verbose.File" Name="Pool" Description="@WindowsPerformanceRecorderControl.dll,-5008" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Pool" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-StoreMgr_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver_CaptureState" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Pool.Verbose.Memory" Name="Pool" Description="@WindowsPerformanceRecorderControl.dll,-5008" DetailLevel="Verbose" Base="Pool.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="VirtualAllocation.Light.File" Name="VirtualAllocation" Description="@WindowsPerformanceRecorderControl.dll,-5009" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_VirtualAllocation_Without_Stacks" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="VirtualAllocation.Light.Memory" Name="VirtualAllocation" Description="@WindowsPerformanceRecorderControl.dll,-5009" DetailLevel="Light" Base="VirtualAllocation.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="VirtualAllocation.Verbose.File" Name="VirtualAllocation" Description="@WindowsPerformanceRecorderControl.dll,-5009" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_VirtualAllocation" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="VirtualAllocation.Verbose.Memory" Name="VirtualAllocation" Description="@WindowsPerformanceRecorderControl.dll,-5009" DetailLevel="Verbose" Base="VirtualAllocation.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Audio.Light.File" Name="Audio" Description="@WindowsPerformanceRecorderControl.dll,-5010" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Audio_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="512"/>
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_AudioEngineVerbose" />
+            <EventProviderId Value="EventProvider_DWMLevel6" />
+            <EventProviderId Value="EventProvider_DWMAPITracerLevel6" />
+            <EventProviderId Value="EventProvider_DWMRedirLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerFilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin7FilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin8FilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DX_Audio" />
+            <EventProviderId Value="EventProvider_DShow_Audio" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4_Without_Stacks"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4_Without_Stacks"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DxgKrnl_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Audio.Light.Memory" Name="Audio" Description="@WindowsPerformanceRecorderControl.dll,-5010" DetailLevel="Light" Base="Audio.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Audio.Verbose.File" Name="Audio" Description="@WindowsPerformanceRecorderControl.dll,-5010" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Audio" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="512"/>
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_AudioEngineVerbose" />
+            <EventProviderId Value="EventProvider_DWMLevel6" />
+            <EventProviderId Value="EventProvider_DWMAPITracerLevel6" />
+            <EventProviderId Value="EventProvider_DWMRedirLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerFilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin7FilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin8FilteredLevel6" />
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DX_Audio" />
+            <EventProviderId Value="EventProvider_DShow_Audio" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_WaitAnalysis_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Networking-Correlation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPC_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-RPCSS_Level4"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DxgKrnl_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Audio.Verbose.Memory" Name="Audio" Description="@WindowsPerformanceRecorderControl.dll,-5010" DetailLevel="Verbose" Base="Audio.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="Video.Light.File" Name="Video" Description="@WindowsPerformanceRecorderControl.dll,-5011" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Video_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="512"/>
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_AudioEngine" />
+            <EventProviderId Value="EventProvider_AvalonPerfLevel6" />
+            <EventProviderId Value="EventProvider_DShow_Video" />
+            <EventProviderId Value="EventProvider_DWMAPITracerLevel6" />
+            <EventProviderId Value="EventProvider_DWMCoreWin7" />
+            <EventProviderId Value="EventProvider_DWMCoreWin8" />
+            <EventProviderId Value="EventProvider_DWMLevel6" />
+            <EventProviderId Value="EventProvider_DWMRedirLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin7Level6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin8Level6" />
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8" />
+            <EventProviderId Value="EventProvider_DX_Video" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DxgKrnl_CaptureState" />
+            <EventProviderId Value="EventProvider_DXVA2" />
+            <EventProviderId Value="EventProvider_MediaFoundation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_MMCSSLevel5" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Video.Light.Memory" Name="Video" Description="@WindowsPerformanceRecorderControl.dll,-5011" DetailLevel="Light" Base="Video.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Video.Verbose.File" Name="Video" Description="@WindowsPerformanceRecorderControl.dll,-5011" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Video" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="512"/>
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_AudioEngine" />
+            <EventProviderId Value="EventProvider_AvalonPerfLevel6" />
+            <EventProviderId Value="EventProvider_DShow_Video" />
+            <EventProviderId Value="EventProvider_DWMAPITracerLevel6" />
+            <EventProviderId Value="EventProvider_DWMCoreWin7" />
+            <EventProviderId Value="EventProvider_DWMCoreWin8" />
+            <EventProviderId Value="EventProvider_DWMLevel6" />
+            <EventProviderId Value="EventProvider_DWMRedirLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerLevel6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin7Level6" />
+            <EventProviderId Value="EventProvider_DWMSchedulerWin8Level6" />
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8" />
+            <EventProviderId Value="EventProvider_DX_Video" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DxgKrnl_CaptureState" />
+            <EventProviderId Value="EventProvider_DXVA2" />
+            <EventProviderId Value="EventProvider_MediaFoundation" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_MMCSSLevel5" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NCSI" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Video.Verbose.Memory" Name="Video" Description="@WindowsPerformanceRecorderControl.dll,-5011" DetailLevel="Verbose" Base="Video.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Power.Light.File" Name="Power" Description="@WindowsPerformanceRecorderControl.dll,-5012" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Power_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Battery" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Battery_TraceLogging" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-DesktopActivityModerator" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Immersive-Shell_Verbose" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Acpi" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Pep" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Process" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NDIS_Light" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Network-Connection-Broker" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Networking-RealTimeCommunication" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PDC" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.PDC_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Power-CAD" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Kernel.Power_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.Battery_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.Toast_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PushNotifications-Platform" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Runtime-Networking-BackgroundTransfer" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Battery_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Battery_TraceLogging_CaptureState" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure_CaptureState" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Acpi_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Pep_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NDIS_CaptureState_Light" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PDC_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Power-CAD_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Energy-Estimation-Engine" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Power.Light.Memory" Name="Power" Description="@WindowsPerformanceRecorderControl.dll,-5012" DetailLevel="Light" Base="Power.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Power.Verbose.File" Name="Power" Description="@WindowsPerformanceRecorderControl.dll,-5012" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Power" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Battery" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Battery_TraceLogging" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-DesktopActivityModerator" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Immersive-Shell_Verbose" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Acpi" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Pep" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Process" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NDIS" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Network-Connection-Broker" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Networking-RealTimeCommunication" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NetworkProfile" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PDC" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Power-CAD" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Kernel.Power_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.Battery_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.Toast_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.PDC_TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PushNotifications-Platform" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Runtime-Networking-BackgroundTransfer" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WLAN-AutoConfig" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Battery_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Battery_TraceLogging_CaptureState" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure_CaptureState" />
+			<EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-PerfTrack-Counters_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Acpi_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Pep_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NDIS_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Network-Connection-Broker_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-NetworkProfile_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PDC_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Power-CAD_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft.Windows.Power.CAD_TraceLogging_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-PushNotifications-Platform_CaptureState" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-UserModePowerService_CaptureState"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Energy-Estimation-Engine" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Power.Verbose.Memory" Name="Power" Description="@WindowsPerformanceRecorderControl.dll,-5012" DetailLevel="Verbose" Base="Power.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="InternetExplorer.Light.File" Name="InternetExplorer" Description="@WindowsPerformanceRecorderControl.dll,-5013" DetailLevel="Light" Base="" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WPRIEInFile">
+          <SystemProviderId Value="SystemProvider_IE_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_PerfTrack" />
+            <EventProviderId Value="EventProvider_IE" />
+            <EventProviderId Value="EventProvider_IEFrame" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client" />
+            <EventProviderId Value="EventProvider_IE7" />
+            <EventProviderId Value="EventProvider_IE8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-URLMon" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="InternetExplorer.Light.Memory" Name="InternetExplorer" Description="@WindowsPerformanceRecorderControl.dll,-5013" DetailLevel="Light" Base="InternetExplorer.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="InternetExplorer.Verbose.File" Name="InternetExplorer" Description="@WindowsPerformanceRecorderControl.dll,-5013" DetailLevel="Verbose" Base="" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WPRIEInFile">
+          <SystemProviderId Value="SystemProvider_IE" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_PerfTrack" />
+            <EventProviderId Value="EventProvider_IE">
+              <Keywords Operation="Add">
+                <Keyword Value="0x30809308"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_IEFrame" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client" />
+            <EventProviderId Value="EventProvider_IE7" />
+            <EventProviderId Value="EventProvider_IE8" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript">
+              <Keywords Operation="Add">
+                <Keyword Value="0x43"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-URLMon" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TCPIP-Level4" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Firewall" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8">
+              <Keywords Operation="Add">
+                <Keyword Value="0x26A000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Process">
+              <Keywords Operation="Set">
+                <Keyword Value="0x2000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-MediaEngine-Level4" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="InternetExplorer.Verbose.Memory" Name="InternetExplorer" Description="@WindowsPerformanceRecorderControl.dll,-5013" DetailLevel="Verbose" Base="InternetExplorer.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="EdgeBrowser.Light.File" Name="EdgeBrowser" Description="@WindowsPerformanceRecorderControl.dll,-5028" DetailLevel="Light" Base="InternetExplorer.Light.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-XAML" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-App-Browser" />
+            <EventProviderId Value="EventProvider_Microsoft-Web-Platform" />
+            <EventProviderId Value="EventProvider_Microsoft-Edge" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WebRuntime" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="EdgeBrowser.Light.Memory" Name="EdgeBrowser" Description="@WindowsPerformanceRecorderControl.dll,-5028" DetailLevel="Light" Base="EdgeBrowser.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="EdgeBrowser.Verbose.File" Name="EdgeBrowser" Description="@WindowsPerformanceRecorderControl.dll,-5028" DetailLevel="Verbose" Base="InternetExplorer.Verbose.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <BufferSize Value="1024"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-XAML" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-App-Browser" />
+            <EventProviderId Value="EventProvider_Microsoft-Web-Platform" />
+            <EventProviderId Value="EventProvider_Microsoft-Edge" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WebRuntime" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="EdgeBrowser.Verbose.Memory" Name="EdgeBrowser" Description="@WindowsPerformanceRecorderControl.dll,-5028" DetailLevel="Verbose" Base="EdgeBrowser.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Minifilter.Light.File" Name="Minifilter" Description="@WindowsPerformanceRecorderControl.dll,-5014" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Minifilter_Without_Stacks" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Minifilter.Light.Memory" Name="Minifilter" Description="@WindowsPerformanceRecorderControl.dll,-5014" DetailLevel="Light" Base="Minifilter.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInMemory">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Minifilter.Verbose.File" Name="Minifilter" Description="@WindowsPerformanceRecorderControl.dll,-5014" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_Minifilter" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Engine" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Service" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-RTP" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-AMFilter" />
+            <EventProviderId Value="EventProvider_Microsoft-Antimalware-Protection" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Minifilter.Verbose.Memory" Name="Minifilter" Description="@WindowsPerformanceRecorderControl.dll,-5014" DetailLevel="Verbose" Base="Minifilter.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInMemory">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="GPU.Light.File" Name="GPU" Description="@WindowsPerformanceRecorderControl.dll,-5015" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_GPU_normal" />
+        </SystemCollectorId>      
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DX_ForGPUView" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_stacks" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_normal" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="GPU.Verbose.File" Name="GPU" Description="@WindowsPerformanceRecorderControl.dll,-5015" LoggingMode="File" DetailLevel="Verbose" Base="GPU.Light.File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_GPU_verbose" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_a688ee40-d8d9-4736-b6f9-6b74935ba3b1" />
+            <EventProviderId Value="EventProvider_DXGI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Direct3D11" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-D3D10Level9" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="GPU.Light.Memory" Name="GPU" Description="@WindowsPerformanceRecorderControl.dll,-5015" Base="GPU.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <BufferSize Value="1024"/>
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <BufferSize Value="1024"/>
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+       </Collectors>
+    </Profile>
+
+    <Profile Id="GPU.Verbose.Memory" Name="GPU" Description="@WindowsPerformanceRecorderControl.dll,-5015" Base="GPU.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <BufferSize Value="1024"/>
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <BufferSize Value="1024"/>
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+       </Collectors>
+    </Profile>
+
+    <Profile Id="Handle.Light.File" Name="Handle" Description="@WindowsPerformanceRecorderControl.dll,-5017" DetailLevel="Light" Base="BaseProfile.Light" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Handle_Without_Stacks" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Handle.Light.Memory" Name="Handle" Description="@WindowsPerformanceRecorderControl.dll,-5017" DetailLevel="Light" Base="Handle.Light.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="Handle.Verbose.File" Name="Handle" Description="@WindowsPerformanceRecorderControl.dll,-5017" DetailLevel="Verbose" Base="BaseProfile.Verbose" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Handle" />
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="Handle.Verbose.Memory" Name="Handle" Description="@WindowsPerformanceRecorderControl.dll,-5017" DetailLevel="Verbose" Base="Handle.Verbose.File" LoggingMode="Memory">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLActivity.Light.File" Name="XAMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5018" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Base" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-XAML" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLActivity.Verbose.File" Name="XAMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5018" LoggingMode="File" DetailLevel="Verbose" Base="XAMLActivity.Light.File">
+    </Profile>
+
+    <Profile Id="XAMLActivity.Light.Memory" Name="XAMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5018" Base="XAMLActivity.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLActivity.Verbose.Memory" Name="XAMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5018" Base="XAMLActivity.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLActivity.Light.File" Name="HTMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5019" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Base" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_IE7" />
+            <EventProviderId Value="EventProvider_IE8" />
+            <EventProviderId Value="EventProvider_IE">
+              <Keywords Operation="Add">
+                <Keyword Value="0x30801300"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript">
+              <Keywords Operation="Add">
+                <Keyword Value="0x43"/>
+              </Keywords>
+            </EventProviderId>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLActivity.Verbose.File" Name="HTMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5019" LoggingMode="File" DetailLevel="Verbose" Base="HTMLActivity.Light.File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_IE">
+              <Keywords Operation="Add">
+                <Keyword Value="0x30805300"/>
+              </Keywords>
+            </EventProviderId>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLActivity.Light.Memory" Name="HTMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5019" Base="HTMLActivity.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLActivity.Verbose.Memory" Name="HTMLActivity" Description="@WindowsPerformanceRecorderControl.dll,-5019" Base="HTMLActivity.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DesktopComposition.Light.File" Name="DesktopComposition" Description="@WindowsPerformanceRecorderControl.dll,-5020" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Base" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DWMCoreWin7" />
+            <EventProviderId Value="EventProvider_DWMCoreWin8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8">
+              <Keywords Operation="Add">
+                <Keyword Value="0x42e3000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_DX_ForGPUView" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_stacks" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_light" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DesktopComposition.Verbose.File" Name="DesktopComposition" Description="@WindowsPerformanceRecorderControl.dll,-5020" LoggingMode="File" DetailLevel="Verbose" Base="DesktopComposition.Light.File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition">
+              <Keywords Operation="Add">
+                <Keyword Value="0x44"/>
+              </Keywords>
+            </EventProviderId>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DesktopComposition.Light.Memory" Name="DesktopComposition" Description="@WindowsPerformanceRecorderControl.dll,-5020" Base="DesktopComposition.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="DesktopComposition.Verbose.Memory" Name="DesktopComposition" Description="@WindowsPerformanceRecorderControl.dll,-5020" Base="DesktopComposition.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLAppResponsiveness.Light.File" Name="XAMLAppResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5021" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_General" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-XAML" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-LoggingChannel" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_DWMCoreWin7" />
+            <EventProviderId Value="EventProvider_DWMCoreWin8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8">
+              <Keywords Operation="Add">
+                <Keyword Value="0x42e3000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_DX_ForGPUView" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_stacks" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_light" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLAppResponsiveness.Verbose.File" Name="XAMLAppResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5021" LoggingMode="File" DetailLevel="Verbose" Base="XAMLAppResponsiveness.Light.File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition">
+              <Keywords Operation="Add">
+                <Keyword Value="0x44"/>
+              </Keywords>
+            </EventProviderId>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLAppResponsiveness.Light.Memory" Name="XAMLAppResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5021" Base="XAMLAppResponsiveness.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLAppResponsiveness.Verbose.Memory" Name="XAMLAppResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5021" Base="XAMLAppResponsiveness.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLResponsiveness.Light.File" Name="HTMLResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5022" LoggingMode="File" DetailLevel="Light" Base="BaseProfile.Light">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_General" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_IE7" />
+            <EventProviderId Value="EventProvider_IE8" />
+            <EventProviderId Value="EventProvider_IE">
+              <Keywords Operation="Add">
+                <Keyword Value="0x30809300"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Diagnostics-LoggingChannel" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript">
+              <Keywords Operation="Add">
+                <Keyword Value="0x43"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_DWMCoreWin7" />
+            <EventProviderId Value="EventProvider_DWMCoreWin8" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8">
+              <Keywords Operation="Add">
+                <Keyword Value="0x42e3000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_DX_ForGPUView" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_stacks" />
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_light" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLResponsiveness.Verbose.File" Name="HTMLResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5022" LoggingMode="File" DetailLevel="Verbose" Base="HTMLResponsiveness.Light.File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_IE">
+              <Keywords Operation="Add">
+                <Keyword Value="0x3080d300"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition">
+              <Keywords Operation="Add">
+                <Keyword Value="0x44"/>
+              </Keywords>
+            </EventProviderId>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLResponsiveness.Light.Memory" Name="HTMLResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5022" Base="HTMLResponsiveness.Light.File" LoggingMode="Memory" DetailLevel="Light">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HTMLResponsiveness.Verbose.Memory" Name="HTMLResponsiveness" Description="@WindowsPerformanceRecorderControl.dll,-5022" Base="HTMLResponsiveness.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose">
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <Buffers Value="5" PercentageOfTotalMemory="true"/>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="ReferenceSet.Verbose.File" Name="ReferenceSet" Description="@WindowsPerformanceRecorderControl.dll,-5023" Base="BaseProfile.Verbose" LoggingMode="File" DetailLevel="Verbose">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <Buffers Value="3" PercentageOfTotalMemory="true"/>
+          <SystemProviderId Value="SystemProvider_ReferenceSet" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <Buffers Value="1" PercentageOfTotalMemory="true"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Win32HeapRanges" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="ResidentSet.Verbose.File" Name="ResidentSet" Description="@WindowsPerformanceRecorderControl.dll,-5024" Base="BaseProfile.Verbose" LoggingMode="File" DetailLevel="Verbose">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRResidentSetInFile">
+          <Buffers Operation="Add" Value="3" PercentageOfTotalMemory="true"/>
+          <SystemProviderId Value="SystemProvider_ResidentSet" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <Buffers Operation="Add" Value="1" PercentageOfTotalMemory="true"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Win32HeapRanges" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    
+    <Profile Id="ResidentSet.Verbose.Memory" Name="ResidentSet" Description="@WindowsPerformanceRecorderControl.dll,-5024" Base="ResidentSet.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose" />
+
+    <Profile Id="XAMLHTMLAppMemoryAnalysis.Light.File" Name="XAMLHTMLAppMemoryAnalysis" Description="@WindowsPerformanceRecorderControl.dll,-5025" Base="BaseProfile.Light" LoggingMode="File" DetailLevel="Light" >
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_VirtualAllocation_Without_Stacks">
+          </SystemProviderId>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_light">
+              <Keywords Operation="Set">
+                <Keyword Value="0x41"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Direct3D11"
+                Name="db6f6ddb-ac77-4e88-8253-819df9bbf140"
+                >
+              <Keywords>
+                <Keyword Value="0x4"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Direct3D10"
+                Name="9b7e4c0f-342c-4106-a19f-4f2704f689f0"
+                >
+              <Keywords>
+                <Keyword Value="0x4"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-D3D10Level9"
+                Name="7E7D3382-023C-43cb-95D2-6F0CA6D70381"
+                >
+              <Keywords>
+                <Keyword Value="0x1"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider Id="EventProvider_a688ee40-d8d9-4736-b6f9-6b74935ba3b1" Name="a688ee40-d8d9-4736-b6f9-6b74935ba3b1" Level="5" >
+              <Keywords>
+                <Keyword Value="0x1"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Kernel-Memory"
+                Name="d1d93ef7-e1f2-4f45-9943-03d245fe6c00" />
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-DirectComposition"
+                Name="c44219d0-f344-11df-a5e2-b307dfd72085" >
+              <Keywords>
+                <Keyword Value="0x4"/>
+              </Keywords>
+            </EventProvider>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="XAMLHTMLAppMemoryAnalysis.Verbose.File" Name="XAMLHTMLAppMemoryAnalysis" Description="@WindowsPerformanceRecorderControl.dll,-5025" Base="BaseProfile.Verbose" LoggingMode="File" DetailLevel="Verbose" >
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFileLarge">
+          <SystemProviderId Value="SystemProvider_General">
+            <Keywords Operation="Add">
+              <Keyword Value="ReferenceSet"/>
+            </Keywords>
+            <Stacks Operation="Add">
+              <Stack Value="PageAccess"/>
+              <Stack Value="PageRelease"/>
+              <Stack Value="PageRangeAccess"/>
+              <Stack Value="PageRangeRelease"/>
+              <Stack Value="PagefileMappedSectionCreate"/>
+              <Stack Value="PagefileMappedSectionDelete"/>
+              <Stack Value="VirtualAllocation"/>
+              <Stack Value="VirtualFree"/>
+              <Stack Value="PageAccessEx"/>
+              <Stack Value="PageRemovedfromWorkingSet"/>
+            </Stacks>
+          </SystemProviderId>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFileLarge">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_a688ee40-d8d9-4736-b6f9-6b74935ba3b1"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-XAML"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-WinINet"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DNS-Client"/>
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_stacks"/>
+            <EventProviderId Value="Microsoft-Windows-DxgKrnl_light">
+              <Keywords Operation="Add">
+                <Keyword Value="0x25"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Win32HeapRanges"/>
+            <EventProviderId Value="EventProvider_DWMCoreWin7"/>
+            <EventProviderId Value="EventProvider_DWMCoreWin8"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-DirectComposition"/>
+            <EventProviderId Value="EventProvider_DWMWin32kWin8">
+              <Keywords Operation="Add">
+                <Keyword Value="0x2e3000"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-COMRuntime"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power"/>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Processor-Power">
+              <Keywords>
+                <Keyword Value="0x2"/>
+              </Keywords>
+            </EventProviderId>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Direct3D11"
+                Name="db6f6ddb-ac77-4e88-8253-819df9bbf140"
+                >
+              <Keywords>
+                <Keyword Value="0x4"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Direct3D10"
+                Name="9b7e4c0f-342c-4106-a19f-4f2704f689f0"
+                >
+              <Keywords>
+                <Keyword Value="0x4"/>
+              </Keywords>
+            </EventProvider>            
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-D3D10Level9"
+                Name="7E7D3382-023C-43cb-95D2-6F0CA6D70381"
+                >
+              <Keywords>
+                <Keyword Value="0x1"/>
+              </Keywords>
+            </EventProvider>  
+            <EventProvider
+                Id="EventProvider_IE"
+                Name="9e3b3947-ca5d-4614-91a2-7b624e0e7244"
+                >
+              <Keywords>
+                <Keyword Value="0x30801300"/>
+              </Keywords>
+            </EventProvider>
+            <EventProvider
+                Id="EventProvider_IEFrame"
+                Name="5c8bb950-959e-4309-8908-67961a1205d5" />
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-Kernel-Memory"
+                Name="d1d93ef7-e1f2-4f45-9943-03d245fe6c00" />
+            <EventProvider
+                Id="EventProvider_Microsoft-Windows-DirectComposition"
+                Name="c44219d0-f344-11df-a5e2-b307dfd72085" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>    
+
+    <!-- OnOff Profiles -->
+    <Profile Id="BaseOnOff.Light.File" Name="BaseOnOff" Description="BaseOnOff" DetailLevel="Light" LoggingMode="File" Internal="true">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6003"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPROnOffInFile">
+          <SystemProviderId Value="SystemProvider_OnOffLight" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8"/>
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState"/>
+            <EventProviderId Value="EventProvider_KernelPnP" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-GroupPolicy" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-EventTracing" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-General" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Prefetch" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-Svchost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-SMSS" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TaskScheduler" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winlogon" />
+            <EventProviderId Value="EventProvider_PerfTrackStatus" />
+            <EventProviderId Value="EventProvider_SearchCore" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="BaseOnOff.Verbose.File" Name="BaseOnOff" Description="BaseOnOff" DetailLevel="Verbose" LoggingMode="File" Internal="true">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6003"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPROnOffInFile">
+          <SystemProviderId Value="SystemProvider_OnOffVerbose" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DWMWin32k" />
+            <EventProviderId Value="EventProvider_DWMWin32k_CaptureState" />
+            <EventProviderId Value="EventProvider_DWMWin32kWin8"/>
+            <EventProviderId Value="EventProvider_DWMWin32kWin8_CaptureState"/>
+            <EventProviderId Value="EventProvider_KernelPnP" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-GroupPolicy" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-EventTracing" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-General" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Prefetch" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-Svchost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-SMSS" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TaskScheduler" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winlogon" />
+            <EventProviderId Value="EventProvider_PerfTrackStatus" />
+            <EventProviderId Value="EventProvider_SearchCore" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="BaseOnOffWithIO.Verbose.File" Name="BaseOnOffWithIO" Description="BaseOnOff" DetailLevel="Verbose" LoggingMode="File" Internal="true">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6003"/>
+      </ProblemCategories>
+      <Collectors Operation="Add">
+        <SystemCollectorId Value="SystemCollector_WPROnOffInFile">
+          <SystemProviderId Value="SystemProvider_OnOffVerboseIO" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_KernelPnP" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-GroupPolicy" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-EventTracing" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-General" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Prefetch" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-Svchost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Services-TraceLogging" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-SMSS" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-TaskScheduler" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winlogon" />
+            <EventProviderId Value="EventProvider_PerfTrackStatus" />
+            <EventProviderId Value="EventProvider_SearchCore" />
+            <EventProviderId Value="EventProvider_DotNetProvider" />
+            <EventProviderId Value="EventProvider_Microsoft-JScript" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ProcessStateManager" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-BrokerInfrastructure" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="BootProfile.Light.File" Name="BootProfile" Description="@WindowsPerformanceRecorderControl.dll,-5050" DetailLevel="Light" Base="BaseOnOff.Light.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_LoaderInfo" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-CodeIntegrity" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-AuthUI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-Core_WDI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-VolumeSnapshot-Driver" />
+            <EventProviderId Value="EventProvider_SoftwareLicensingV6" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Security-SPP" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="BootProfile.Verbose.File" Name="BootProfile" Description="@WindowsPerformanceRecorderControl.dll,-5050" DetailLevel="Verbose" Base="BaseOnOff.Verbose.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_LoaderInfo" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-CodeIntegrity" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-AuthUI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-VolumeSnapshot-Driver" />
+            <EventProviderId Value="EventProvider_SoftwareLicensingV6" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Security-SPP" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="BootProfileWithIO.Verbose.File" Name="BootProfileWithIO" Description="@WindowsPerformanceRecorderControl.dll,-5051" DetailLevel="Verbose" Base="BaseOnOffWithIO.Verbose.File" LoggingMode="File" Internal="true">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_LoaderInfo" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoost" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-ReadyBoostDriver" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-CodeIntegrity" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-AuthUI" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Shell-Core" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-VolumeSnapshot-Driver" />
+            <EventProviderId Value="EventProvider_SoftwareLicensingV6" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Security-SPP" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+ 
+    <Profile Id="HybridBootProfile.Light.File" Name="HybridBootProfile" Description="@WindowsPerformanceRecorderControl.dll,-5052" DetailLevel="Light" Base="BootProfile.Light.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HybridBootProfile.Verbose.File" Name="HybridBootProfile" Description="@WindowsPerformanceRecorderControl.dll,-5052" DetailLevel="Verbose" Base="BootProfile.Verbose.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HybridBootProfileWithIO.Verbose.File" Name="HybridBootProfileWithIO" Description="@WindowsPerformanceRecorderControl.dll,-5053" DetailLevel="Verbose" Base="BootProfileWithIO.Verbose.File" LoggingMode="File" Internal="true">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="ShutdownProfile.Light.File" Name="ShutdownProfile" Description="@WindowsPerformanceRecorderControl.dll,-5054" DetailLevel="Light" Base="BaseOnOff.Light.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="ShutdownProfile.Verbose.File" Name="ShutdownProfile" Description="@WindowsPerformanceRecorderControl.dll,-5054" DetailLevel="Verbose" Base="BaseOnOff.Verbose.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="ShutdownProfileWithIO.Verbose.File" Name="ShutdownProfileWithIO" Description="@WindowsPerformanceRecorderControl.dll,-5055" DetailLevel="Verbose" Base="BaseOnOffWithIO.Verbose.File" LoggingMode="File" Internal="true">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="RebootProfile.Verbose.File" Name="RebootProfile" Description="@WindowsPerformanceRecorderControl.dll,-5056" DetailLevel="Verbose" Base="BootProfile.Verbose.File" LoggingMode="File">
+      <Collectors Operation="Add">
+        <EventCollectorId Value="EventCollector_WPROnOffInFile">
+          <EventProviders Operation="Add">
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Kernel-Power" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Subsys-Csr" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Wininit" />
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Winsrv" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="StandbyProfile.Light.File" Name="StandbyProfile" Description="@WindowsPerformanceRecorderControl.dll,-5057" DetailLevel="Light" Base="BaseOnOff.Light.File" LoggingMode="File" />
+
+    <Profile Id="StandbyProfile.Verbose.File" Name="StandbyProfile" Description="@WindowsPerformanceRecorderControl.dll,-5057" DetailLevel="Verbose" Base="BaseOnOff.Verbose.File" LoggingMode="File" />
+
+    <Profile Id="StandbyProfileWithIO.Verbose.File" Name="StandbyProfileWithIO" Description="@WindowsPerformanceRecorderControl.dll,-5058" DetailLevel="Verbose" Base="BaseOnOffWithIO.Verbose.File" LoggingMode="File" Internal="true" />
+
+    <Profile Id="HibernateProfile.Light.File" Name="HibernateProfile" Description="@WindowsPerformanceRecorderControl.dll,-5059" DetailLevel="Light" Base="BaseOnOff.Light.File" LoggingMode="File" />
+
+    <Profile Id="HibernateProfile.Verbose.File" Name="HibernateProfile" Description="@WindowsPerformanceRecorderControl.dll,-5059" DetailLevel="Verbose" Base="BaseOnOff.Verbose.File" LoggingMode="File" />
+
+    <Profile Id="HibernateProfileWithIO.Verbose.File" Name="HibernateProfileWithIO" Description="@WindowsPerformanceRecorderControl.dll,-5060" DetailLevel="Verbose" Base="BaseOnOffWithIO.Verbose.File" LoggingMode="File" Internal="true" />
+
+    <Profile Id="UTC.Light.File" Name="UTC" Description="@WindowsPerformanceRecorderControl.dll,-5061" DetailLevel="Light" LoggingMode="File">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+      <Collectors>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_UTC" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="UTC.Light.Memory" Name="UTC" Description="@WindowsPerformanceRecorderControl.dll,-5061" DetailLevel="Light" Base="UTC.Light.File" LoggingMode="Memory" />
+
+    <Profile Id="DotNET.Verbose.File" Name="DotNET" Description="@WindowsPerformanceRecorderControl.dll,-5027" LoggingMode="File" DetailLevel="Verbose">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6002"/>
+      </ProblemCategories>
+
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_DotNETRuntime">
+          <SystemProviderId Value="SystemProvider_DotNETRuntime" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_DotNETRuntime_Session">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_DotNETRuntime" />
+            <EventProviderId Value="EventProvider_DotNETNativeRuntime" />
+            <EventProviderId Value="EventProvider_DotNETRuntimePrivate" />
+            <EventProviderId Value="EventProvider_IIS" />
+            <EventProviderId Value="EventProvider_Silverlight" />
+            <EventProviderId Value="EventProvider_WPF" />
+            <EventProviderId Value="EventProvider_ASPNet" />
+            <EventProviderId Value="EventProvider_TPL" />
+            <EventProviderId Value="EventProvider_DotNETRuntime_CaptureState" />
+            <EventProviderId Value="EventProvider_DotNETRuntimeRundown_CaptureState" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+    <Profile Id="DotNET.Verbose.Memory" Name="DotNET" Description="@WindowsPerformanceRecorderControl.dll,-5027" Base="DotNET.Verbose.File" LoggingMode="Memory" DetailLevel="Verbose" />
+
+    <Profile Id="WdfTraceLoggingProvider.Verbose.File" Name="WdfTraceLoggingProvider" Description="@WindowsPerformanceRecorderControl.dll,-5026" LoggingMode="File" DetailLevel="Verbose">
+      <ProblemCategories>
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WDF">
+          <SystemProviderId Value="SystemProvider_WDF" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WdfPerfTraceProvider">
+          <Buffers PercentageOfTotalMemory="true" Value="6"/>
+          <EventProviders>
+            <EventProviderId Value="EventProvider_KMDF" />
+            <EventProviderId Value="EventProvider_UMDFxV2" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="HeapSnapshot.Light.File" Name="HeapSnapshot" Description="@WindowsPerformanceRecorderControl.dll,-5029" DetailLevel="Light" Base="" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Base"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Heap-Snapshot" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+      <TraceMergeProperties>
+        <TraceMergeProperty Id="BaseLightTraceMergeProperties" Name="BaseTraceMergeProperties" Base="">
+          <DeletePreMergedTraceFiles Value="true"/>
+          <CustomEvents>
+            <CustomEvent Value="ImageId"/>
+            <CustomEvent Value="BuildInfo"/>
+            <CustomEvent Value="EventMetadata"/>
+          </CustomEvents>
+        </TraceMergeProperty>
+      </TraceMergeProperties>
+    </Profile>
+
+    <Profile Id="HeapSnapshot.Verbose.File" Name="HeapSnapshot" Description="@WindowsPerformanceRecorderControl.dll,-5029" DetailLevel="Verbose" Base="" LoggingMode="File">
+      <ProblemCategories Operation="Add">
+        <ProblemCategory Value="@WindowsPerformanceRecorderControl.dll,-6001"/>
+      </ProblemCategories>
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_WPRSystemCollectorInFile">
+          <SystemProviderId Value="SystemProvider_Base" />
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_WPREventCollectorInFile">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Microsoft-Windows-Heap-Snapshot" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+      <TraceMergeProperties>
+        <TraceMergeProperty Id="BaseLightTraceMergeProperties" Name="BaseTraceMergeProperties" Base="">
+          <DeletePreMergedTraceFiles Value="true"/>
+          <CustomEvents>
+            <CustomEvent Value="ImageId"/>
+            <CustomEvent Value="BuildInfo"/>
+            <CustomEvent Value="EventMetadata"/>
+          </CustomEvents>
+        </TraceMergeProperty>
+      </TraceMergeProperties>
+    </Profile>
+
+  </Profiles>
+
+  <TraceMergeProperties>
+    <TraceMergeProperty Id="TraceMerge_Default" Name="TraceMerge_Default" Base="">
+      <DeletePreMergedTraceFiles Value="true"/>
+      <CustomEvents>
+        <CustomEvent Value="ImageId"/>
+        <CustomEvent Value="BuildInfo"/>
+        <CustomEvent Value="VolumeMapping"/>
+        <CustomEvent Value="EventMetadata"/>
+        <CustomEvent Value="PerfTrackMetadata"/>
+        <CustomEvent Value="WinSAT"/>
+        <CustomEvent Value="NetworkInterface"/>
+      </CustomEvents>
+    </TraceMergeProperty>
+  </TraceMergeProperties>
+
+  <OnOffTransitionConfigurations>
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_Boot" Name="OnOffTransitionConfiguration_Default_Boot" Type="On/Off - Boot">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="Boot"/>
+    </OnOffTransitionConfiguration>
+
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_HybridBoot" Name="OnOffTransitionConfiguration_Default_HybridBoot" Type="On/Off - FastStartup">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="HybridBoot"/>
+    </OnOffTransitionConfiguration>
+
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_Shutdown" Name="OnOffTransitionConfiguration_Default_Shutdown" Type="On/Off - Shutdown">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="Shutdown"/>
+    </OnOffTransitionConfiguration>
+
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_RebootCycle" Name="OnOffTransitionConfiguration_Default_RebootCycle" Type="On/Off - RebootCycle">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="RebootCycle"/>
+    </OnOffTransitionConfiguration>
+
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_Standby" Name="OnOffTransitionConfiguration_Default_Standby" Type="On/Off - Standby/Resume">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="Standby"/>
+    </OnOffTransitionConfiguration>
+
+    <OnOffTransitionConfiguration Id="OnOffTransitionConfiguration_Default_Hibernate" Name="OnOffTransitionConfiguration_Default_Hibernate" Type="On/Off - Hibernate/Resume">
+      <PrepareSystem Value="false"/>
+      <NumberOfRuns Value="3"/>
+      <PostBootDelay Value="120"/>
+      <WakeupDelay Value="60"/>
+      <TransitionTag Value="Hibernate"/>
+    </OnOffTransitionConfiguration>
+  </OnOffTransitionConfigurations>
+
+</WindowsPerformanceRecorder>

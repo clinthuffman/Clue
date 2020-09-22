@@ -37,7 +37,7 @@ Function Test-Property
 
 Function Get-WptFolderPath
 {
-    param([string] $SuggestedPath='', [string] $Log = '.\Clue.log')
+    param([string] $SuggestedPath='C:\Program Files\Clue', [string] $Log = '.\Clue.log')
     #// Searches for the WPT install folder path and confirms it.
         #// Depends on .\Modules\Registry.psm1
         #// HKEY_CLASSES_ROOT\wpa or #HKEY_LOCAL_MACHINE\SOFTWARE\Classes\wpa
@@ -51,25 +51,13 @@ Function Get-WptFolderPath
     Write-Log ('[Get-WptFolderPath] RegistryKeyValue: ' + $Temp) -Log $Log
     [string] $RegFolderPath = Get-FolderPathFromFilePath -FilePath $Temp -Log $Log
 
-    $aWptFolderPaths = @($SuggestedPath,$RegFolderPath,'C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit','C:\Program Files\Windows Kits\10\Windows Performance Toolkit')
+    $aWptFolderPaths = @($SuggestedPath,$RegFolderPath,'C:\Windows\System32','C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit','C:\Program Files\Windows Kits\10\Windows Performance Toolkit')
 
     foreach ($FolderPath in $aWptFolderPaths)
     {
         if ($FolderPath -ne '')
         {
-            [bool] $IsXperfAndWprExist = $true
-
-            [string] $s = $FolderPath + '\xperf.exe'
-            Write-Log ('[Get-WptFolderPath] ' + $s) -Log $Log
-            if (Test-Path -Path $s) 
-            {
-                Write-Log ('[Get-WptFolderPath] Xperf.exe found.') -Log $Log
-            }
-            else
-            {
-                $IsXperfAndWprExist = $false
-                Write-Log ('[Get-WptFolderPath] Xperf.exe not found!') -Log $Log
-            }
+            [bool] $IsWprExist = $true
 
             [string] $s = $FolderPath + '\wpr.exe'
             Write-Log ('[Get-WptFolderPath] ' + $s) -Log $Log
@@ -79,11 +67,11 @@ Function Get-WptFolderPath
             }
             else
             {
-                $IsXperfAndWprExist = $false
+                $IsWprExist = $false
                 Write-Log ('[Get-WptFolderPath] wpr.exe not found!') -Log $Log
             }
 
-            if ($IsXperfAndWprExist -eq $true)
+            if ($IsWprExist -eq $true)
             {
                 Write-Log ('[Get-WptFolderPath] WptFolderPath: ' + $FolderPath) -Log $Log
                 Write-Log ('[Get-WptFolderPath] WPT folder path is confirmed.') -Log $Log

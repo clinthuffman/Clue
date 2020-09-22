@@ -11,24 +11,13 @@
     Created: 2013-01-08
     Keywords: PowerShell, PAL
 #>
-param([string] $OutputDirectory='%systemdrive%\Perflogs', [string] $IcuLogFilePath ='')
-
-[bool] $global:IsIcuInstallation = $False
+param([string] $OutputDirectory='%systemdrive%\Perflogs', [string] $Log = '.\Setup.log')
+$InvocationFolderPath = ($SCRIPT:MyInvocation.MyCommand.Path) -replace '\\PalCollector.ps1',''
 
 If ($OutputDirectory -eq '') {$OutputDirectory='%systemdrive%\Perflogs'}
 
 [string] $WorkingDirectory = $pwd
 Set-Location $WorkingDirectory
-
-if ($IcuLogFilePath -ne '')
-{
-    [string] $Log = $IcuLogFilePath
-    [bool] $global:IsIcuInstallation = $true    
-}
-else
-{
-    [string] $Log = $WorkingDirectory + '\Setup.log'
-}
 
 [string] '[' + (Get-Date) + '] [PalCollector.ps1] Start' >> $Log
 
@@ -54,6 +43,13 @@ Function Test-FileExists
     {
         Return Test-Path -Path $Path
     }
+}
+
+Function Test-Numeric
+{
+    param($Value)
+    [double] $number = 0
+    Return [double]::TryParse($Value, [REF]$number)
 }
 
 Function Test-Property 
@@ -514,6 +510,172 @@ Function GetDataCollectorSetNames
     Return $oCollectionOfDataCollectorNames
 }
 
+Function Get-TaskSchedulerService
+{
+    try
+    {
+        $oTaskSchedulerService = New-Object -ComObject 'Schedule.Service'
+        $oTaskSchedulerService.Connect()
+        Return $oTaskSchedulerService
+    }
+    catch
+    {
+        Return $null
+    }
+}
+
+Function Get-Ps2ScheduledTaskFolder
+{
+    param([string] $Path)
+
+    $oTaskSchedulerService = Get-TaskSchedulerService
+
+    if ($oTaskSchedulerService -eq $null)
+    {
+        Return $null
+    }
+
+    try
+    {
+        $oTaskSchedulerFolder = $oTaskSchedulerService.GetFolder($Path)
+    }
+    catch
+    {
+
+    }
+
+    if ($oTaskSchedulerFolder -ne $null)
+    {
+        Return $oTaskSchedulerFolder
+    }
+    
+    if ($Path.Contains('\'))
+    {
+        $aPath = $Path.Split('\',[StringSplitOptions]'RemoveEmptyEntries')
+    }
+    else
+    {
+        Return $null
+    }
+    
+    [int] $iCount = 0
+    For ($i = 0; $i -le $aPath.GetUpperBound(0); $i++)
+    {
+        [string] $sBuildPath = $sBuildPath + '\' + $aPath[$i]
+
+        try
+        {
+            Write-Log ('sBuildPath: ' + $sBuildPath)
+            $oTaskSchedulerFolder = $oTaskSchedulerService.GetFolder($sBuildPath)
+        }
+        catch
+        {
+            try
+            {
+                #// Get the parent path and create it.
+                if ($oTaskSchedulerParentFolder -ne $null)
+                {
+                    $oTaskSchedulerFolder = $oTaskSchedulerParentFolder.CreateFolder($aPath[$i])
+                }
+                else
+                {
+                    Return $null
+                }
+            }
+            catch
+            {
+                Return $null
+            }
+        }
+        finally
+        {
+            $oTaskSchedulerParentFolder = $oTaskSchedulerFolder
+        }
+        $iCount++
+    }
+
+    if ($iCount -eq $aPath.Count)
+    {
+        Return $oTaskSchedulerFolder
+    }
+    else
+    {
+        Return $null
+    }
+}
+
+Function New-Ps2ScheduledTask
+{
+    param([string] $ScheduledTaskFolderPath, [string] $Name, [string] $Description, [string] $Path, [string] $Arguments, [string] $Trigger, [string] $WorkingDirectory, [string] $StartImmediately = 'true', [string] $Priority = 'normal')
+
+    $TASK_TRIGGER_TIME = 1
+    $TASK_TRIGGER_BOOT = 8
+    $EXECUTABLE_OR_SCRIPT = 0
+    $CREATE_OR_UPDATE = 6
+    $TASK_LOGON_SERVICE_ACCOUNT = 5
+    $TASK_LOGON_PASSWORD = 1
+    $HIGH_PRIORITY_CLASS = 1
+    $THREAD_PRIORITY_LOW = 8
+
+    $oTaskSchedulerFolder = Get-Ps2ScheduledTaskFolder -Path $ScheduledTaskFolderPath
+
+    if ($oTaskSchedulerFolder -eq $null)
+    {
+        Return $false
+    }
+
+    $oTaskSchedulerService = Get-TaskSchedulerService
+    $oTaskDefinition = $oTaskSchedulerService.NewTask(0)
+
+    $oTaskDefinition.RegistrationInfo.Description = $Description
+    $oTaskDefinition.RegistrationInfo.Author = 'Clint Huffman (clinth@microsoft.com)'
+    $oTaskDefinition.Settings.StartWhenAvailable = $true
+    $oTaskDefinition.Settings.ExecutionTimeLimit = 'PT0S'
+    $oTaskDefinition.Settings.AllowHardTerminate = $false
+    $oTaskDefinition.Settings.StopIfGoingOnBatteries = $false
+    $oTaskDefinition.Settings.DisallowStartIfOnBatteries = $false
+    
+    $oTaskDefinition.Settings.IdleSettings.StopOnIdleEnd = $false
+
+    if ($Priority -eq 'high')
+    {
+        $oTaskDefinition.Settings.Priority = $HIGH_PRIORITY_CLASS
+    }
+
+    if ($Priority -eq 'low')
+    {
+        $oTaskDefinition.Settings.Priority = $THREAD_PRIORITY_LOW
+    }
+
+    if (($Trigger -eq 'onstart') -or ($Trigger -eq '0'))
+    {
+        $oNewTrigger = $oTaskDefinition.Triggers.Create($TASK_TRIGGER_BOOT)
+    }
+
+    if (Test-Numeric -Value $Trigger)
+    {
+        [string] $sTriggerInterval = 'PT' + $Trigger + 'M'
+        $oNewTrigger = $oTaskDefinition.Triggers.Create($TASK_TRIGGER_TIME)
+        $oNewTrigger.Repetition.Interval = $sTriggerInterval
+        $oNewTrigger.StartBoundary = '2015-01-01T10:00:00'
+    }
+
+    $oNewAction = $oTaskDefinition.Actions.Create($EXECUTABLE_OR_SCRIPT)
+
+    $oNewAction.Path = $Path
+    $oNewAction.Arguments = $ExecutionContext.InvokeCommand.ExpandString($Arguments)
+    
+    $oNewAction.WorkingDirectory = $WorkingDirectory
+    $oTask = $oTaskSchedulerFolder.RegisterTaskDefinition($Name, $oTaskDefinition, $CREATE_OR_UPDATE, 'SYSTEM', $null, $TASK_LOGON_SERVICE_ACCOUNT)
+
+    if ($StartImmediately -eq 'true')
+    {
+        Start-Sleep -Seconds 2
+        [void] $oTask.Run('')
+    }
+}
+
+
 #//////////
 #// Main //
 #//////////
@@ -530,17 +692,10 @@ If ((Test-Path -Path $OutputDirectory) -eq $False)
 $OutputDriveLetter = $OutputDirectory.Substring(0,1) + ':'
 $OutputDriveLetter = $OutputDriveLetter.ToUpper()
 
-#// Test if output logical drive had enough free disk space.
-#//If ((Test-LogicalDiskFreeSpace -DriveLetterOrPath $OutputDirectory -FreeSpaceInMB 200) -eq $False)
-#//{
-#//    Write-Warning "Not enough free space on $OutputDriveLetter drive! Select another location with more free space."
-#//    #Break;
-#//}
-
 $global:alCounterList = New-Object System.Collections.ArrayList
 $oCounterObjectsOnLocalSystem = Get-Counter -ListSet * | SELECT CounterSetName, CounterSetType | Sort-Object CounterSetName
 
-If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
+If ((Test-Path -Path "$InvocationFolderPath\CounterObjectList.txt") -eq $False)
 {
     $oFiles = Get-ChildItem -Path $WorkingDirectory\*.xml
     $global:alCounterList = New-Object System.Collections.ArrayList
@@ -550,7 +705,6 @@ If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
     ForEach ($oFile in $oFiles)
     {
         Write-Log $oFile.Name
-        #$oFile.Name >> $Log
         $iMatches = 0
         $iCounters = 0
 
@@ -569,21 +723,20 @@ If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
     }
 
     $alCounterObjectsFromThresholdFiles = $alCounterObjectsFromThresholdFiles.GetEnumerator() | Sort-Object
-    $alCounterObjectsFromThresholdFiles > .\CounterObjectList.txt
+    $alCounterObjectsFromThresholdFiles > "$InvocationFolderPath\CounterObjectList.txt"
 
 }
 
-If ((Test-Path -Path .\CounterObjectList.txt) -eq $False)
+If ((Test-Path -Path "$InvocationFolderPath\CounterObjectList.txt") -eq $False)
 {
     Write-Host 'Unable to find CounterList.txt!'
     Break;
 }
 
-$aFile = Get-Content -Path .\CounterObjectList.txt
+$aFile = Get-Content -Path "$InvocationFolderPath\CounterObjectList.txt"
 $alCounterObjectsFromPalThresholdFiles = New-Object System.Collections.ArrayList(,$aFile)
 
-
-#$alCounterObjectsFromPalThresholdFiles = Get-Content -Path .\CounterObjectList.txt
+#$alCounterObjectsFromPalThresholdFiles = Get-Content -Path "$InvocationFolderPath\CounterObjectList.txt"
 
 ForEach ($oCounterObjectOnLocalSystem in $oCounterObjectsOnLocalSystem)
 {
@@ -639,15 +792,7 @@ Write-Log $oOutput
 Write-Log ''
 
 
-if ($global:IsIcuInstallation -eq $true)
-{
-    [string] $sDataCollectorSetName = 'ICU_PalCollector'
-}
-else
-{
-    [string] $sDataCollectorSetName = 'PalCollector'
-}
-
+[string] $sDataCollectorSetName = 'PalCollector'
 
 ForEach ($sLine in $oOutput)
 {
@@ -674,14 +819,7 @@ ForEach ($sLine in $oOutput)
     }
 }
 
-if ($global:IsIcuInstallation -eq $true)
-{
-    [string] $sOutputFilePath = $OutputDirectory + '\ICU_PalCollector.blg'
-}
-else
-{
-    [string] $sOutputFilePath = $OutputDirectory + '\PalCollector.blg'
-}
+[string] $sOutputFilePath = $OutputDirectory + '\PalCollector.blg'
 
     [string] $sName = ''
     [string] $sCmd = ''
@@ -728,7 +866,8 @@ else
         }
     }
 
-[string] $sCmd = 'logman create counter ' + $sDataCollectorSetName + ' -cf "' + $UserTempDirectory + '\counterlist.txt" -f bincirc -max 100 -si 00:00:05 -o "' + $sOutputFilePath + '" -ow --v'
+[string] $sCmd = 'logman create counter ' + $sDataCollectorSetName + ' -cf "' + $UserTempDirectory + '\counterlist.txt" -f bincirc -max 100 -si 00:00:01 -o "' + $sOutputFilePath + '" -ow --v'
+#[string] $sCmd = 'logman create counter ' + $sDataCollectorSetName + ' -cf "' + $UserTempDirectory + '\counterlist.txt" -f bincirc -max 100 -si 00:00:05 -o "' + $sOutputFilePath + '" -ow'
 Write-Log $sCmd
 Invoke-Expression -Command $sCmd >> $Log
 Write-Log ''
@@ -741,7 +880,8 @@ Write-Log ''
 
 Remove-Item -Path $sCounterListFilePath
 
-[string] $sCmd = 'schtasks /create /tn PalCollector_OnWindowsStart /sc onstart /tr "logman start PalCollector" /ru system /F'
+New-Ps2ScheduledTask -ScheduledTaskFolderPath '\' -Name 'PalCollector_OnWindowsStart' -Description 'Starts the PalCollector data collector set on start of Windows.' -Path 'logman' -Arguments 'start PalCollector' -Trigger 'onstart' -StartImmediately $true
+
 Write-Log $sCmd
 Invoke-Expression -Command $sCmd >> $Log
 Write-Log ''

@@ -13,8 +13,6 @@ param([string] $IsSilentInstallation = 'false', [string] $Log = '.\Setup.log')
 #  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
 #  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
 
-[string] $SetupLog = ((PWD).Path + '\Setup.log')
-
 [bool] $IsSilentInstallation = [System.Convert]::ToBoolean($IsSilentInstallation)
 
 #////////////////
@@ -23,7 +21,7 @@ param([string] $IsSilentInstallation = 'false', [string] $Log = '.\Setup.log')
 
 Function Write-Log
 {
-    param($Output, [string] $Log = '.\Setup.log')
+    param($Output)
     #// Writes to the log file.
     $TimeStamp = "$(Get-Date -format yyyyMMdd-HHmmss)"    
     if ($Output -eq $null) {Add-content $Log -value ('[' + $TimeStamp + '] NULL') -Encoding Unicode;Return}
@@ -41,19 +39,19 @@ Function Test-Error
     #// Tests if an error condition exists and writes it to the log.
     if ($Err.Count -gt 0)
     {
-        Write-Log ('[Test-Error] Error(s) found: ' + $Err.Count) -Log $Log
-        Write-Log ($Err) -Log $Log
+        Write-Log ('[Test-Error] Error(s) found: ' + $Err.Count)
+        Write-Log ($Err)
         $Err.Clear()
     }
 }
 
 Function Invoke-MyCmd
 {
-    param([string] $Cmd, [string] $Log = '.\Setup.log')
-    Write-Log ($Cmd) -Log $Log
+    param([string] $Cmd)
+    Write-Log ($Cmd)
     $Output = Invoke-Expression -Command $Cmd
-    Write-Log ($Output) -Log $Log
-    Test-Error -Err $Error -Log $Log
+    Write-Log ($Output)
+    Test-Error -Err $Error
 }
 
 #///////////
@@ -61,9 +59,9 @@ Function Invoke-MyCmd
 #/////////
 
 $Error.Clear()
-Write-Log ('[Uninstall]: Start') -Log $Log
-Invoke-MyCmd -Cmd 'schtasks /Delete /TN \Microsoft\Windows\PLA\PalCollector-OnWindowsStart /F' -Log $Log
-Invoke-MyCmd -Cmd 'logman stop PalCollector' -Log $Log
+Write-Log ('[Uninstall]: Start')
+Invoke-MyCmd -Cmd 'schtasks /Delete /TN \Microsoft\Windows\PLA\PalCollector-OnWindowsStart /F'
+Invoke-MyCmd -Cmd 'logman stop PalCollector'
 Start-Sleep -Seconds 2
-Invoke-MyCmd -Cmd 'logman delete PalCollector' -Log $Log
-Write-Log ('[Uninstall]: End') -Log $Log
+Invoke-MyCmd -Cmd 'logman delete PalCollector'
+Write-Log ('[Uninstall]: End')

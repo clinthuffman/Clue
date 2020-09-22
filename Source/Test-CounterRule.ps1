@@ -18,7 +18,8 @@ Import-Module .\Modules\TaskScheduler.psm1 -Force
 Import-Module .\Modules\Xml.psm1 -Force
 Import-Module .\Modules\FileSystem.psm1 -Force
 
-[string] $Log = '.\' + $RuleName + '.log'
+[string] $Log = $RuleName + '.log'
+[int] $iSleepAfterActionsInSeconds = 600
 
 #////////////////
 #// Functions //
@@ -45,6 +46,111 @@ Function Test-CounterInstanceExclusion
     Return $false
 }
 
+function Measure-PerformanceCounter
+{
+    param([string] $RuleName = 'Testing',[string] $CounterPath, [int] $SampleInterval = 1, [int] $MaxSamples = 3, [string] $Operator, [double] $Threshold, [string] $Exclude = '', [string] $Log = $Log)
+
+    $oCounterData = @(Get-Counter -Counter $CounterPath -SampleInterval $SampleInterval -MaxSamples $MaxSamples)
+    foreach ($Sample in ($oCounterData.CounterSamples))
+    {
+        if ($Sample.Status -ne 0)
+        {
+            Write-Log ('[Test-CounterRule: Sample Status: ' + $RuleName + ']: ' + $Sample.Status) -Log $Log
+            Return $false
+        }
+    }
+
+    Test-Error -Err $Error -Log $Log
+    If ((Test-Property -InputObject $oCounterData -Name 'Count' -Log $Log) -eq $False)
+    {
+        Write-Log ('[Test-CounterRule:' + $RuleName + '] No data!') -Log $Log
+        Return $false
+    }
+    else
+    {
+        Write-Log ('[Test-CounterRule:' + $RuleName + '] CounterData.Count: ' + $oCounterData.Count) -Log $Log
+    }
+    $uCounterData = $oCounterData.GetUpperBound(0)
+    $uCounterSamples = $oCounterData[0].CounterSamples.GetUpperBound(0)
+    Test-Error -Err $Error -Log $Log
+    For ($a = 0;$a -le $uCounterSamples;$a++)
+    {
+        [bool] $IsWithinThreshold = $false
+        [bool] $IsThresholdBrokenAtLeastOnce = $false
+        :SampleDataLoop For ($b = 0; $b -le $uCounterData;$b++)
+        {
+            $oTime = $oCounterData[$b]
+            $oCounterInstance = $oCounterData[$b].CounterSamples[$a]
+
+            if ((Test-CounterInstanceExclusion -Exclude $Exclude -CounterInstanceName $oCounterInstance.InstanceName -Log $Log) -eq $false)
+            {
+                Write-Log ($oCounterInstance.Path + ', CookedValue: ' + $oCounterInstance.CookedValue) -Log $Log
+                switch ($Operator)
+                {
+                    'gt'
+                    {
+                        If (($oCounterInstance.CookedValue) -gt $Threshold)
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+                    'ge'
+                    {
+                        If (($oCounterInstance.CookedValue) -ge $Threshold) 
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+                    'lt'
+                    {
+                        If (($oCounterInstance.CookedValue) -lt $Threshold)
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+                    'le'
+                    {
+                        If (($oCounterInstance.CookedValue) -le $Threshold)
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+                    'eq'
+                    {
+                        If (($oCounterInstance.CookedValue) -eq $Threshold)
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+                    default
+                    {
+                        If (($oCounterInstance.CookedValue) -gt $Threshold)
+                        {$IsThresholdBrokenAtLeastOnce = $true} else {$IsWithinThreshold = $true;Break SampleDataLoop;}
+                    }
+    	        }
+                Test-Error -Err $Error -Log $Log
+            }
+            else
+            {
+                #// Write-Log ('Counter instance is excluded!') -Log $Log
+            }
+        }
+
+        if (($IsThresholdBrokenAtLeastOnce -eq $true) -and ($IsWithinThreshold -eq $false))
+        {
+            $sCounterName = ($oCounterData[0].CounterSamples[$a]).Path
+            Write-Log ($sCounterName + ' <= Exceeded the threshold') -Log $Log
+            Return $true
+        }
+    }
+    Return $False
+}
+
+function Get-CollectionLevelFromRegistry
+{
+    [int] $iCollectionLevel = 1
+    $IsFound = Test-Path -Path 'HKLM:\SOFTWARE\Clue'
+    If ($IsFound -eq $true)
+    {
+        $RegCollectionLevel = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Clue').CollectionLevel
+        $iCollectionLevel = $RegCollectionLevel
+        if (($iCollectionLevel -ge 0) -and ($iCollectionLevel -le 3))
+        {
+            Return $iCollectionLevel
+        }
+    }
+}
+
 #///////////
 #// Main //
 #/////////
@@ -62,6 +168,15 @@ if (Test-Property -InputObject $XmlDoc -Name 'Configuration' -Log $Log)
 {
     [System.Xml.XmlElement] $XmlConfig = $XmlDoc.Configuration
 }
+
+$InstallationDirectory = $XmlConfig.InstallationDirectory
+$InstallationDirectory = [System.Environment]::ExpandEnvironmentVariables($InstallationDirectory)
+$OutputDirectory = $XmlConfig.OutputDirectory
+$OutputDirectory = [System.Environment]::ExpandEnvironmentVariables($OutputDirectory)
+$UploadNetworkShare = $XmlConfig.UploadNetworkShare
+$EmailReportTo = $XmlConfig.EmailReportTo
+$WptFolderPath = $XmlConfig.WptFolderPath
+$CollectionLevel = $XmlConfig.CollectionLevel
 
 $XmlRuleNode = Get-MatchingNodeByAttribute -XmlConfig $XmlConfig -NodeName 'Rule' -Attribute 'Name' -Value $RuleName -Log $Log
 Test-Error -Err $Error -Log $Log
@@ -91,7 +206,16 @@ Test-Error -Err $Error -Log $Log
 
 #// Operator
 [string] $Operator = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'Operator' -Log $Log
-if (($Operator -ne 'gt') -and ($Operator -ne 'lt')) {Write-Log ('[Test-CounterRule:' + $RuleName + '] Operator is not found or greater than or less than sign.') -Log $Log;Exit;}
+#if (($Operator -ne 'gt') -and ($Operator -ne 'lt')) {Write-Log ('[Test-CounterRule:' + $RuleName + '] Operator is not found or greater than or less than sign.') -Log $Log;Exit;}
+switch ($Operator)
+{
+    'gt' {}
+    'ge' {}
+    'lt' {}
+    'le' {}
+    'eq' {}
+    default {Write-Log ('[Test-CounterRule:' + $RuleName + '] Operator is not found or greater than or less than sign.') -Log $Log;Exit;}
+}
 Test-Error -Err $Error -Log $Log
 
 #// Threshold
@@ -99,8 +223,24 @@ Test-Error -Err $Error -Log $Log
 if (Test-Numeric -Value $Temp -Log $Log) {[double] $Threshold = $Temp} else {Write-Log ('[Test-CounterRule:' + $RuleName + '] Threshold is not found or not numeric.') -Log $Log;Exit;}
 Test-Error -Err $Error -Log $Log
 
-#// Actions
-[string] $Actions = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'Actions' -Log $Log
+#// OnStart actions
+[string] $OnStartActions = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'OnStartActions' -Log $Log
+Test-Error -Err $Error -Log $Log
+
+#// OnEndActions actions
+[string] $OnEndActions = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'OnEndActions' -Log $Log
+Test-Error -Err $Error -Log $Log
+
+#// MaxTraceTimeInSeconds
+[int] $Temp = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'MaxTraceTimeInSeconds' -Log $Log
+if (Test-Numeric -Value $Temp -Log $Log) {[int] $MaxTraceTimeInSeconds = $Temp} else {Write-Log ('[Test-CounterRule:' + $RuleName + '] MaxTraceTimeInSeconds is not found or not numeric.') -Log $Log;Exit;}
+Test-Error -Err $Error -Log $Log
+
+#// RunLimit
+[int] $Ran = 0
+[int] $RunLimit = 3
+[int] $Temp = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'RunLimit' -Log $Log
+if (Test-Numeric -Value $Temp -Log $Log) {[int] $RunLimit = $Temp} else {Write-Log ('[Test-CounterRule:' + $RuleName + '] RunLimit is not found or not numeric.') -Log $Log;Exit;}
 Test-Error -Err $Error -Log $Log
 
 #// Code
@@ -114,7 +254,8 @@ if (Test-Property -InputObject $XmlRuleNode -Name 'CODE' -Log $Log)
     Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'MaxSamples' -Value '3'
     Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'Operator' -Value 'gt'
     Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'Threshold' -Value ''
-    Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'Actions' -Value ''
+    Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'OnStartActions' -Value ''
+    Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'OnEndActions' -Value ''
     Add-Member -InputObject $oDataCollector -MemberType NoteProperty -Name 'Code' -Value ''
 
     if ((Test-Property -InputObject $XmlRuleNode -Name 'Name' -Log $Log) -eq $True)           {$oDataCollector.Name           = $XmlRuleNode.Name}
@@ -124,7 +265,8 @@ if (Test-Property -InputObject $XmlRuleNode -Name 'CODE' -Log $Log)
     if ((Test-Property -InputObject $XmlRuleNode -Name 'MaxSamples' -Log $Log) -eq $True)     {$oDataCollector.MaxSamples     = $XmlRuleNode.MaxSamples}
     if ((Test-Property -InputObject $XmlRuleNode -Name 'Operator' -Log $Log) -eq $True)       {$oDataCollector.Operator       = $XmlRuleNode.Operator}
     if ((Test-Property -InputObject $XmlRuleNode -Name 'Threshold' -Log $Log) -eq $True)      {$oDataCollector.Threshold      = $XmlRuleNode.Threshold}
-    if ((Test-Property -InputObject $XmlRuleNode -Name 'Actions' -Log $Log) -eq $True)        {$oDataCollector.Actions        = $XmlRuleNode.Actions}
+    if ((Test-Property -InputObject $XmlRuleNode -Name 'OnStartActions' -Log $Log) -eq $True) {$oDataCollector.OnStartActions = $XmlRuleNode.OnStartActions}
+    if ((Test-Property -InputObject $XmlRuleNode -Name 'OnEndActions' -Log $Log) -eq $True)   {$oDataCollector.OnEndActions   = $XmlRuleNode.OnEndActions}
 
     $oDataCollector.Code = $XmlRuleNode.CODE.get_innertext()
     $oDataCollector = Invoke-CounterRuleCode -DataCollector $oDataCollector -Log $Log
@@ -136,7 +278,8 @@ if (Test-Property -InputObject $XmlRuleNode -Name 'CODE' -Log $Log)
     $XmlRuleNode.MaxSamples = $oDataCollector.MaxSamples
     $XmlRuleNode.Operator = $oDataCollector.Operator
     $XmlRuleNode.Threshold = $oDataCollector.Threshold
-    $XmlRuleNode.Actions = $oDataCollector.Actions    
+    $XmlRuleNode.OnStartActions = $oDataCollector.OnStartActions
+    $XmlRuleNode.OnEndActions = $oDataCollector.OnEndActions
     [bool] $IsDone = $false
     [int] $i = 0
     Do
@@ -157,6 +300,8 @@ if (Test-Property -InputObject $XmlRuleNode -Name 'CODE' -Log $Log)
     
 }
 
+$CollectionLevel = Get-CollectionLevelFromRegistry
+
 [string] $Temp = Get-XmlAttribute -XmlNode $XmlRuleNode -Name 'Threshold' -Log $Log
 if (Test-Numeric -Value $Temp -Log $Log) {[double] $Threshold = $Temp} else {Write-Log ('[Test-CounterRule:' + $RuleName + '] Threshold is not found or not numeric.') -Log $Log;Exit;}
 Test-Error -Err $Error -Log $Log
@@ -167,113 +312,162 @@ Test-Error -Err $Error -Log $Log
 Write-Log ('[Test-CounterRule] Start-TruncateLog...Done!') -Log $Log
 [datetime] $dtLastLogTruncate = (Get-Date)
 
+#////////////////////////////////////
+#// Search and confirm WPT folder //
+#//////////////////////////////////
+
+[string] $WptFolderPath = ''
+if (Test-Property -InputObject $XmlConfig -Name 'WptFolderPath' -Log $Log)
+{
+    [string] $WptFolderPath = Get-WptFolderPath -SuggestedPath $XmlConfig.WptFolderPath -Log $Log
+}
+else
+{
+    [string] $WptFolderPath = Get-WptFolderPath -Log $Log
+}
+Test-Error -Err $Error -Log $Log
+if ($WptFolderPath -eq '')
+{
+    Write-Log ('[Invoke-Rule:' + $RuleName + '] Unable to find WptFolderPath. Unable to continue.') -Log $Log
+}
+
+#//////////////////////////
+#// Get OutputDirectory //
+#////////////////////////
+
+[string] $OutputDirectory = ''
+[string] $OutputDirectory = Get-XmlAttribute -XmlNode $XmlConfig -Name 'OutputDirectory' -Log $Log
+$OutputDirectory = [System.Environment]::ExpandEnvironmentVariables($OutputDirectory)
+Test-Error -Err $Error -Log $Log
+
+if ($OutputDirectory -ne '')
+{
+    if ((New-DirectoryWithConfirm -DirectoryPath $OutputDirectory -Log $Log) -eq $false)
+    {
+        Test-Error -Err $Error -Log $Log
+        Write-Log ('[Invoke-Rule:' + $RuleName + '] Unable to create: ' + $OutputDirectory) -Log $Log
+        Exit;
+    }
+}
+
+[datetime] $dtTraceStartTime = (Get-date)
+[bool] $IsCollecting = $false
+[bool] $IsTimeoutReached = $false
+[string] $IncidentOutputFolder = ''
+[int] $CollectionLevel = 1
+$CollectionLevel = Get-CollectionLevelFromRegistry
+Write-Log ('CollectionLevel: ' + $CollectionLevel) -Log $Log
+
 Write-Log ('Starting infinite loop...') -Log $Log
 Do
 {
-    $oCounterData = @(Get-Counter -Counter $CounterPath -SampleInterval $SampleInterval -MaxSamples $MaxSamples)
-    Test-Error -Err $Error -Log $Log
+    [bool] $IsThresholdBroken = $false
+    $IsThresholdBroken = Measure-PerformanceCounter -RuleName $RuleName -CounterPath $CounterPath -SampleInterval $SampleInterval -MaxSamples $MaxSamples -Operator $Operator -Threshold $Threshold -Exclude $Exclude -Log $Log
 
-    If ((Test-Property -InputObject $oCounterData -Name 'Count' -Log $Log) -eq $False)
+    if (($IsThresholdBroken -eq $True) -and ($IsCollecting -eq $false))
     {
-        Write-Log ('[Test-CounterRule:' + $RuleName + '] No data!') -Log $Log
-        Break;
-    }
-    else
-    {
-        Write-Log ('[Test-CounterRule:' + $RuleName + '] CounterData.Count: ' + $oCounterData.Count) -Log $Log
-    }
-
-    $uCounterData = $oCounterData.GetUpperBound(0)
-    $uCounterSamples = $oCounterData[0].CounterSamples.GetUpperBound(0)
-    Test-Error -Err $Error -Log $Log
-
-    For ($a = 0;$a -le $uCounterSamples;$a++)
-    {
-        [bool] $DidAnySampleNotBreakTheThreshold = $false
-        [bool] $IsThresholdBrokenAtLeastOnce = $false
-        :SampleDataLoop For ($b = 0; $b -le $uCounterData;$b++)
+        if ($Ran -ge $RunLimit)
         {
-            $oTime = $oCounterData[$b]
-            $oCounterInstance = $oCounterData[$b].CounterSamples[$a]
+            Write-Log ('///////////////////') -Log $Log
+            Write-Log ('// RunLimit Hit //') -Log $Log
+            Write-Log ('/////////////////') -Log $Log
+            Write-Log ('Ran: ' + $Ran + ' / RunLimit: ' + $RunLimit)
+            Write-Log 'Runlimit hit! Disabling this task.' -Log $Log
+            Disable-ScheduledTask -TaskName $RuleName -Log $Log
+            Write-Log ('!!! Stopping this task !!!')
+            Stop-Ps2ScheduledTask -TaskName $RuleName -Log $Log
+        }
+        else
+        {
+            $IsCollecting = $True
+            Write-Log ('/////////////////////////////') -Log $Log
+            Write-Log ('// Invoke OnStart Actions //') -Log $Log
+            Write-Log ('///////////////////////////') -Log $Log
 
-            Write-Log ($oCounterInstance.Path + ', CookedValue: ' + $oCounterInstance.CookedValue) -Log $Log
-            Test-Error -Err $Error -Log $Log
-
-            if ((Test-CounterInstanceExclusion -Exclude $Exclude -CounterInstanceName $oCounterInstance.InstanceName -Log $Log) -eq $false)
+            if ($OnStartActions -ne '')
             {
-                switch ($Operator)
+                Write-Log ('Get-CollectionLevelFromRegistry::Start')
+                $CollectionLevel = Get-CollectionLevelFromRegistry
+                Write-Log ('CollectionLevel: ' + $CollectionLevel.ToString())
+                Write-Log ('Get-CollectionLevelFromRegistry::End')
+                Write-Log 'Running OnstartActions...' -Log $Log
+                Write-Log ('[Invoke-Rule:' + $RuleName + '] Invoke-Actions: ' + $OnStartActions) -Log $Log
+                $TimeStamp = "$(Get-Date -format yyyyMMdd-HHmmss)"
+                Write-Log ('[Invoke-Actions] TimeStamp: ' + $TimeStamp) -Log $Log
+                $IncidentOutputFolder = Get-IncidentFolderPath -TimeStamp $TimeStamp -RuleName $RuleName -OutputDirectory $OutputDirectory
+                Write-Log ('[Invoke-Actions] IncidentOutputFolder: ' + $IncidentOutputFolder) -Log $Log
+                if ((New-DirectoryWithConfirm -DirectoryPath $IncidentOutputFolder -Log $Log) -eq $false)
                 {
-                    'gt'
-                    {
-                        If (($oCounterInstance.CookedValue) -gt $Threshold) 
-                        {$IsThresholdBrokenAtLeastOnce = $True} Else {$DidAnySampleNotBreakTheThreshold = $true;Break SampleDataLoop;}
-                    }
-                    'ge'
-                    {
-                        If (($oCounterInstance.CookedValue) -ge $Threshold) 
-                        {$IsThresholdBrokenAtLeastOnce = $True} Else {$DidAnySampleNotBreakTheThreshold = $true;Break SampleDataLoop;}
-                    }
-                    'lt'
-                    {
-                        If (($oCounterInstance.CookedValue) -lt $Threshold)
-                        {$IsThresholdBrokenAtLeastOnce = $True} Else {$DidAnySampleNotBreakTheThreshold = $true;Break SampleDataLoop;}
-                    }
-                    'le'
-                    {
-                        If (($oCounterInstance.CookedValue) -le $Threshold)
-                        {$IsThresholdBrokenAtLeastOnce = $True} Else {$DidAnySampleNotBreakTheThreshold = $true;Break SampleDataLoop;}
-                    }
-                    default
-                    {
-                        If (($oCounterInstance.CookedValue) -gt $Threshold)
-                        {$IsThresholdBrokenAtLeastOnce = $True} Else {$DidAnySampleNotBreakTheThreshold = $true;Break SampleDataLoop;}
-                    }
-    	        }
+                    Test-Error -Err $Error -Log $Log
+                    Write-Log ('[Invoke-Actions] Unable to create: ' + $IncidentOutputFolder) -Log $Log
+                    Exit;
+                }
+                New-DataCollectionInProgress -IncidentOutputFolder $IncidentOutputFolder
+                Write-Log ('[Invoke-Actions] CollectionLevel before Invoke-Actions: ' + $CollectionLevel) -Log $Log
+                Invoke-Actions -XmlConfig $XmlConfig -WptFolderPath $WptFolderPath -RuleName $RuleName -Actions $OnStartActions -IncidentOutputFolder $IncidentOutputFolder -CollectionLevel $CollectionLevel -Log $Log
+                Test-Error -Err $Error -Log $Log
+                $IsTimeoutReached = $false
+                $dtTraceStartTime = (Get-date)
+                Write-Log 'Running OnstartActions...Done!' -Log $Log
+                Write-Log ('[Invoke-Actions] Update-Ran: ' + $RuleName) -Log $Log
+                $Ran = $Ran + 1
+                #Update-Ran -XmlConfig $XmlConfig -RuleName $RuleName
                 Test-Error -Err $Error -Log $Log
             }
             else
             {
-                Write-Log ('Counter instance is excluded!') -Log $Log
-                $DidAnySampleNotBreakTheThreshold = $true
+                Write-Log ('[Invoke-Rule:' + $RuleName + '] OnStartActions is blank.') -Log $Log
             }
         }
+    }
 
-        [bool] $IsActionNeeded = $false
-
-        If ($DidAnySampleNotBreakTheThreshold -eq $False) 
+    #// Is MaxTraceTime hit?
+    if ($IsCollecting -eq $True)
+    {
+        $TraceElapedSeconds = (New-TimeSpan -Start $dtTraceStartTime -End (Get-Date)).TotalSeconds
+        if ($TraceElapedSeconds -gt $MaxTraceTimeInSeconds)
         {
-            $IsActionNeeded = $True
+            $IsTimeoutReached = $True
+            Write-Log ('MaxTraceTimeInSeconds: ' + $MaxTraceTimeInSeconds.ToString())
+            Write-Log ('MaxTraceTimeInSeconds reached!')
+            Write-Log ('dtTraceStartTime: ' + $dtTraceStartTime.ToString())
+            Write-Log ('dtCurrentTime: ' + (Get-Date).ToString())
         }
-
-        If ($IsActionNeeded -eq $True)
+        else
         {
-            Write-Log '###############' -Log $Log
-            For ($b = 0; $b -le $uCounterData;$b++)
-            {
-                Write-Log ('[Test-CounterRule:' + $RuleName + '] [' + (($oCounterData[$b]).Timestamp) + '] ' + (($oCounterData[$b].CounterSamples[$a]).Path) + ': ' + (($oCounterData[$b].CounterSamples[$a]).CookedValue)) -Log $Log
-            }
-            Write-Log 'ActionNeeded!!!' -Log $Log
-            Write-Log '###############' -Log $Log
-            [string] $Arguments = "-RuleName $RuleName"
-
-            if (Test-RunLimit -XmlConfig $XmlConfig -RuleName $Rulename -Log $Log)
-            {
-                Write-Log 'Runlimit hit! No action.' -Log $Log
-            }
-            else
-            {
-                Write-Log 'Running Invoke-Rule...' -Log $Log
-                Start-Ps2ScheduledTask -ScheduledTaskFolderPath '\Microsoft\Windows\Clue' -TaskName 'Invoke-Rule' -Arguments $Arguments -Log $Log
-                Write-Log 'Running Invoke-Rule...Done!' -Log $Log
-                Test-Error -Err $Error -Log $Log
-                Write-Log ('Running Update-Ran...') -Log $Log
-                Update-Ran -XmlConfig $XmlConfig -Actions $Actions -Log $Log
-                Write-Log ('Running Update-Ran...Done') -Log $Log
-                Write-Log ('Sleeping...') -Log $Log
-                Start-Sleep -Seconds 300
-                Write-Log ('Sleeping...Done!') -Log $Log
-            }
+            $IsTimeoutReached = $false
         }
+    }
+
+    if ((($IsThresholdBroken -eq $false) -and ($IsCollecting -eq $True)) -or $IsTimeoutReached -eq $True)
+    {
+        Write-Log ('///////////////////////////') -Log $Log
+        Write-Log ('// Invoke OnEnd Actions //') -Log $Log
+        Write-Log ('/////////////////////////') -Log $Log
+
+        if ($OnEndActions -ne '')
+        {
+
+            Write-Log ('Get-CollectionLevelFromRegistry::Start')
+            $CollectionLevel = Get-CollectionLevelFromRegistry
+            Write-Log ('CollectionLevel: ' + $CollectionLevel.ToString())
+            Write-Log ('Get-CollectionLevelFromRegistry::End')
+            Write-Log 'Running OnEndActions...' -Log $Log
+            Write-Log ('[Invoke-Rule:' + $RuleName + '] Invoke-Actions: ' + $OnEndActions) -Log $Log
+            Invoke-Actions -XmlConfig $XmlConfig -WptFolderPath $WptFolderPath -RuleName $RuleName -Actions $OnEndActions -IncidentOutputFolder $IncidentOutputFolder -CollectionLevel $CollectionLevel -Log $Log
+            Test-Error -Err $Error -Log $Log
+            $IsCollecting = $false
+            Write-Log 'Running OnEndActions...Done!' -Log $Log
+            Remove-DataCollectionInProgress -IncidentOutputFolder $IncidentOutputFolder
+            Write-Log ('Sleeping after Invoke Actions...')
+            Start-Sleep -Seconds $iSleepAfterActionsInSeconds
+            Write-Log ('Done sleeping.')            
+        }
+        else
+        {
+            Write-Log ('[Invoke-Rule:' + $RuleName + '] OnEndActions is blank.') -Log $Log
+        }
+        $IsTimeoutReached = $false
     }
 
     [int] $RandomMinutes = Get-Random -Minimum 100 -Maximum 200
@@ -285,6 +479,7 @@ Do
         [datetime] $dtLastLogTruncate = (Get-Date)
         Write-Log ('[Test-CounterRule] Start-TruncateLog...Done!') -Log $Log
     }
+
     Start-Sleep -Seconds 1
 } Until ($false -eq $true)
 Write-Log ('[/Test-CounterRule:' + $RuleName + ']') -Log $Log

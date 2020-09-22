@@ -4,13 +4,13 @@ param()
 # All rights reserved.
 #
 # THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, 
-#  INCLUDING BUT NOT LIMITED To THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+# ï¿½INCLUDING BUT NOT LIMITED To THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 #  PARTICULAR PURPOSE.'
 #
 # IN NO EVENT SHALL MICROSOFT AND/OR ITS RESPECTIVE SUPPLIERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR 
-#  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# ï¿½CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
 #  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
-#  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
+# ï¿½WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
 
 Remove-Module * -Force
 Import-Module .\Modules\General.psm1 -Force
@@ -20,6 +20,7 @@ Import-Module .\Modules\TaskScheduler.psm1 -Force
 
 [string] $WorkingDirectory = (PWD).Path
 [string] $Log = ($WorkingDirectory + '\IncidentFolderManagement.log')
+[bool] $IsAzureUpload = $true
 
 [bool] $Force = [System.Convert]::ToBoolean($Force)
 Write-Log ('[IncidentFolderManagement] Start') -Log $Log
@@ -48,6 +49,32 @@ Function Reset-ExpirationDateTime
     [int] $iHour = Get-Random -Minimum 0 -Maximum 24
     [int] $iMinute = Get-Random -Minimum 0 -Maximum 60
     Return (Get-Date -Hour $iHour -Minute $iMinute -Second 00).AddDays(1)
+}
+
+function Get-FileNameFromFilePath
+{
+    param([string] $Path)
+
+    $aPath = $Path.Split('\')
+    $u = $aPath.GetUpperBound(0)
+    Return $aPath[$u]
+}
+function UploadToAzureStorage([string] $FilePath, $UploadSharePath = 'https://prodmwaasservices.blob.core.windows.net/bitlockerlogs', $BlobSig = 'P3N2PTIwMTgtMDMtMjgmc2k9Yml0bG9ja2VybG9ncy0xNkUyOTc4RTU3QSZzcj1jJnNpZz1qNGJnbXp6MFBLa1BYQnA5JTJGZCUyRk01dDJTMFd3JTJCVDNrYyUyQkN6STAxN2NvcUklM0Q=' ) 
+{
+    $FileName = Get-FileNameFromFilePath -Path $FilePath
+    $BlobSig = [System.Convert]::FromBase64String($BlobSig)
+    $BlobSig = [System.Text.Encoding]::ASCII.GetString($BlobSig)
+    # File to create
+    #$RESTAPI_URL = "https://prodmwaasservices.blob.core.windows.net/bitlockerlogs/" + $FilePath + $BlobSig
+    $RESTAPI_URL = $UploadSharePath + '/' + $FileName + $BlobSig
+    $RequestHeader = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    $RequestHeader.Add("x-ms-version", "2015-04-05")
+    $RequestHeader.Add("x-ms-blob-type", "BlockBlob")
+    $RequestHeader.Add("x-ms-request-server-encrypted", "true")       
+    # Create a new PS object to hold the response JSON
+    $RESTResponse = New-Object PSObject;
+    $RESTResponse = (Invoke-RestMethod -Uri $RESTAPI_URL -Method put -Headers $RequestHeader -InFile $FilePath);
+    Return $RESTResponse
 }
 
 #/////////////////
@@ -91,14 +118,25 @@ Set-Location -Path $OutputDirectory
 #// Get Upload share //
 #/////////////////////
 [bool] $IsUpload = $false
-$UploadSharePath = Get-XmlAttribute -XmlNode $XmlConfig -Name 'UploadNetworkShare' -Log $Log
+[bool] $IsAzureUpload = $false
+[string] $UploadSharePath = Get-XmlAttribute -XmlNode $XmlConfig -Name 'UploadNetworkShare' -Log $Log
 If ($UploadSharePath -ne '')
 {
-    If (Test-UncPath -UncPath $UploadSharePath)
+    if ($UploadSharePath.IndexOf('http') -eq 0)
     {
-        [bool] $IsUpload = $true
+        $IsAzureUpload = $true
+    }
+    else 
+    {
+        If (Test-UncPath -UncPath $UploadSharePath)
+        {
+            [bool] $IsUpload = $true
+        }
     }
 }
+Write-Log ('IsUpload: ' + $IsUpload.ToString()) -Log $Log
+Write-Log ('IsAzureUpload: ' + $IsAzureUpload.ToString()) -Log $Log
+Write-Log ('UploadSharePath: ' + $UploadSharePath) -Log $Log
 
 Start-TruncateLog -FilePath $Log -Log $Log
 [datetime] $dtLastLogTruncate = (Get-Date)
@@ -150,12 +188,37 @@ Do
     }
     Write-Log ('[IncidentFolderManagement] Compression: End') -Log $Log
 
+    #/////////////////////////////////////////
+    #// Upload CPU to Cloud - Experimental //
+    #///////////////////////////////////////
+    if ($IsAzureUpload -eq $true)
+    {
+        $ZipFiles = Get-ChildItem -Path "$OutputDirectory\*.zip"
+        foreach ($Zip in $ZipFiles)
+        {
+            Write-Log ('') -Log $Log
+            $Error.Clear()
+            Write-Log ('Uploading ' + $zip.FullName + ' to cloud blob.') -Log $Log
+            $FilePath = $Zip.FullName
+            $RestResponse = UploadToAzureStorage $FilePath
+            if ($Error.Count -eq 0)
+            {                
+                Write-Log ('Deleting ' + $FilePath) -Log $Log
+                Start-Sleep -Seconds 1
+                Remove-Item -Path $FilePath -ErrorAction SilentlyContinue -Force
+                Write-Log ('Done') -Log $Log
+            }
+            Test-Error -Err $Error -Log $Log
+            Write-Log ('') -Log $Log
+        }
+    }
+
     #//////////////////////////////////////
     #// Move zip files to network share //
     #////////////////////////////////////
-
-    if ($UploadSharePath -ne '')
+    if ($IsUpload -eq $true)
     {
+        #// Upload zip files
         [string] $sCmd = 'Robocopy.exe "' + $OutputDirectory + '" "' + $UploadSharePath + '" *.zip /MOV /IPG:300 /R:0'
         Write-Log ('[IncidentFolderManagement] sCmd: ' + $sCmd) -Log $Log
         $aOutput = Invoke-Expression -Command $sCmd

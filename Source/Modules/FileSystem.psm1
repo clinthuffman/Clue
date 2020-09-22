@@ -161,7 +161,35 @@ Function Test-DataCollectionInProgress
     Return $false
 }
 
-Function Add-Zip
+function Add-Zip
+{
+    param([string] $FolderPathToCompress, [string] $ZipFilePath, [bool] $DeleteSource = $false, [string] $Log = '.\Clue.log')
+
+    if (Test-Path $ZipFilePath) 
+    {
+        Remove-Item $ZipFilePath -force
+    }
+
+    Add-Type -AssemblyName 'system.io.compression.filesystem' | Out-Null
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($FolderPathToCompress, $ZipFilePath)
+
+    [int] $Attempts = 0
+    [int] $Length = 0
+    Do
+    {
+        $Length = (Get-Item -Path $ZipFilePath).Length
+        $Attempts++
+        Start-Sleep -Seconds 1
+    } until (($Length -gt 100) -or ($Attempts -gt 2))
+
+    if ($DeleteSource -eq $true)
+    {
+        Remove-Item -Path $FolderPathToCompress -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Return $Length
+}
+
+Function Old-Add-Zip
 {
     param([string] $FolderPathToCompress, [string] $ZipFilePath, [bool] $DeleteSource = $false, [string] $Log = '.\Clue.log')
 
@@ -247,7 +275,14 @@ function Remove-InstallationFolder
         Remove-Item -Path $FolderPath -Recurse -Force
     }
 }
+function Get-FileNameFromFilePath
+{
+    param([string] $Path)
 
+    $aPath = $Path.Split('\')
+    $u = $aPath.GetUpperBound(0)
+    Return $aPath[$u]
+}
 Function Start-TruncateLog
 {
     param($FilePath, [int] $Threshold = 10000, [int] $TruncateTo = 1000, [string] $Log = '.\Clue.log')

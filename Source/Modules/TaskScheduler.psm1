@@ -383,3 +383,53 @@ Function Get-WorkingDirectoryFromTask
     }
     Return ''
 }
+
+Function Disable-ScheduledTask
+{
+    param([string] $ScheduledTaskFolderPath = '\Microsoft\Windows\Clue', [string] $TaskName, [string] $Log)
+
+    [string] $TaskPath = $ScheduledTaskFolderPath + '\' + $TaskName
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: START') -Log $Log
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Getting folder path...') -Log $Log
+    $oTaskSchedulerFolder = Get-Ps2ScheduledTaskFolder -Path $ScheduledTaskFolderPath -Log $Log
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Getting folder path...Done!') -Log $Log
+    if ($oTaskSchedulerFolder -eq $null)
+    {
+        Return $false
+    }
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Getting task...') -Log $Log
+    $oTask = $oTaskSchedulerFolder.GetTask($TaskName)
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Getting task...Done!') -Log $Log
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Disabling task...') -Log $Log
+    $oTask.Enabled = $false
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: Disabling task...Done!') -Log $Log
+    Write-Log ('[Disable-ScheduledTask: ' + $TaskPath + ']: END') -Log $Log
+}
+
+Function Stop-Ps2ScheduledTask
+{
+    param([string] $ScheduledTaskFolderPath = '\Microsoft\Windows\Clue', [string] $TaskName, [string] $Log)
+
+    [string] $TaskPath = $ScheduledTaskFolderPath + '\' + $TaskName
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: START') -Log $Log
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Getting folder path...') -Log $Log
+    $oTaskSchedulerFolder = Get-Ps2ScheduledTaskFolder -Path $ScheduledTaskFolderPath -Log $Log
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Getting folder path...Done!') -Log $Log
+    if ($oTaskSchedulerFolder -eq $null)
+    {
+        Return $false
+    }
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Getting task...') -Log $Log
+    $oTask = $oTaskSchedulerFolder.GetTask($TaskName)
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Getting task...Done!') -Log $Log
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Stopping task...') -Log $Log
+    $oTask.Stop(0)
+    Test-Error -Err $Error -Log $Log
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: Stopping task...Done!') -Log $Log
+    Write-Log ('[Stop-Ps2ScheduledTask: ' + $TaskPath + ']: END') -Log $Log
+}

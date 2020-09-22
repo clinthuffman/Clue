@@ -13,28 +13,48 @@ param([string] $IsSilentInstallation = 'false')
 #  WITH THE USE OR PERFORMANCE OF THIS CODE OR INFORMATION.
 
 [string] $Log = ([System.Environment]::ExpandEnvironmentVariables('%TEMP%') + '\ClueSetup.log')
-Clear-Content -Path $Log
-
-Remove-Module * -Force
-Import-Module .\Modules\General.psm1 -Force
-Import-Module .\Modules\Xml.psm1 -Force
-Import-Module .\Modules\FileSystem.psm1 -Force
-Import-Module .\Modules\TaskScheduler.psm1 -Force
-
-[bool] $IsSilentInstallation = [System.Convert]::ToBoolean($IsSilentInstallation)
-[string] $global:ToolName = 'Clue'
-[string] $global:ScheduledTaskFolderPath = "\Microsoft\Windows\$global:ToolName"
-[string] $global:SetupFolder = $PWD
-[string] $global:WorkingDirectory = $PWD
+[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 
 #////////////////
 #// Functions //
 #//////////////
 
+Function Write-Log
+{
+    param($Output)
+    #// Writes to the log file.
+    $TimeStamp = "$(Get-Date -format yyyyMMdd-HHmmss)"
+
+    if ($Output -eq $null) {Add-content $Log -value ('[' + $TimeStamp + '] NULL') -Encoding Unicode;Return}
+    switch ($Output.GetType().FullName)
+    {
+        'System.String'                {Add-content -Path $Log -value ('[' + $TimeStamp + '] ' + $Output) -Encoding Unicode}
+        default                        {Add-content -Path $Log -value ('[' + $TimeStamp + ']') -Encoding Unicode; $Output >> $Log}
+    }
+}
+
+Function Test-Error
+{
+    param($Err)
+    #// Tests if an error condition exists and writes it to the log.
+    if ($Err.Count -gt 0)
+    {
+        Write-Log ('[Test-Error] Error(s) found: ' + $Err.Count)
+        Write-Log ($Err)
+        $Err.Clear()
+    }
+}
+
+Function Test-Property
+{
+	param ([Parameter(Position=0,Mandatory=1)]$InputObject,[Parameter(Position=1,Mandatory=1)]$Name)
+	[Bool](Get-Member -InputObject $InputObject -Name $Name -MemberType *Property)
+}
+
 Function Write-Console
 {
-    param([string] $sLine, [bool] $bNoNewLine = $false, [bool] $bAddDateTime = $true, [bool] $IsSilentInstallation = $false, [string] $Log = $Log)
-    Write-Log ($sLine) -Log $Log
+    param([string] $sLine, [bool] $bNoNewLine = $false, [bool] $bAddDateTime = $true, [bool] $IsSilentInstallation = $false)
+    Write-Log ($sLine)
 
     if ($IsSilentInstallation -eq $false)
     {
@@ -61,7 +81,7 @@ Function Write-Console
 
 Function Write-MsgBox
 {
-    param([string] $sLine, [bool] $IsSilentInstallation = $false, [string] $Log = $Log)    
+    param([string] $sLine, [bool] $IsSilentInstallation = $false)    
     if ($IsSilentInstallation -eq $false)
     {
         Write-Console ('[PopUp] ' + $sLine)
@@ -72,10 +92,10 @@ Function Write-MsgBox
 
 Function Set-OverallProgress
 {
-    param([string] $Status='', [string] $Log = $Log)
+    param([string] $Status='')
 
     $global:iOverallCompletion++
-    $iPercentComplete = ConvertToDataType -ValueAsDouble $(($global:iOverallCompletion / 13) * 100) -DataTypeAsString 'integer' -Log $Log
+    $iPercentComplete = ConvertToDataType -ValueAsDouble $(($global:iOverallCompletion / 13) * 100) -DataTypeAsString 'integer'
     If ($iPercentComplete -gt 100){$iPercentComplete = 100}
     $sComplete = "Clue installation progress: $iPercentComplete%... $Status"
     Write-Progress -activity 'Progress: ' -status $sComplete -percentcomplete $iPercentComplete -id 1;
@@ -84,10 +104,10 @@ Function Set-OverallProgress
 
 function Get-OutputDirectory
 {
-    param($XmlConfig, [string] $Log = $Log)
-    Write-Log ('[Get-OutputDirectory]: START') -Log $Log
+    param($XmlConfig)
+    Write-Log ('[Get-OutputDirectory]: START')
     [bool] $IsDone = $false
-    [string] $OutputDirectory = Get-XmlAttribute -XmlNode $XmlConfig -Name 'OutputDirectory' -Log $Log
+    [string] $OutputDirectory = Get-XmlAttribute -XmlNode $XmlConfig -Name 'OutputDirectory'
     if ($OutputDirectory -eq '')
     {
         [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
@@ -100,7 +120,7 @@ function Get-OutputDirectory
             {
                 Write-Console '[PopUp] Waiting for user response...' -bNoNewLine $true -bAddDateTime $false
                 $sResponse = [Microsoft.VisualBasic.Interaction]::InputBox('This is where output files will go. Several gigabytes might be necessary.', 'Clue tool - Output Directory', 'C:\ClueOutput')
-                Write-Log ('UserResponse: ' + $sResponse) -Log $Log
+                Write-Log ('UserResponse: ' + $sResponse)
 
                 if ($sResponse -eq '')
                 {
@@ -116,7 +136,7 @@ function Get-OutputDirectory
                 {
                     $sResponse = $sResponse.Replace(' ','')
                     $sResponse = [Microsoft.VisualBasic.Interaction]::InputBox('Please provide a folder path without spaces. This is due to how the Task Scheduler handles parameters.', 'Clue tool - Output Directory - Try Again', $sResponse)
-                    Write-Log ('UserResponse: ' + $sResponse) -Log $Log
+                    Write-Log ('UserResponse: ' + $sResponse)
                 }
             }
         }
@@ -131,11 +151,11 @@ function Get-OutputDirectory
             Break;
         }
 
-        $IsDone = New-DirectoryWithConfirm -DirectoryPath $sResponse -Log $Log
+        $IsDone = New-DirectoryWithConfirm -DirectoryPath $sResponse
         if ($IsDone -eq $true)
         {
             $OutputDirectory = $sResponse
-            Write-Log ("`t" + 'Output folder "' + $OutputDirectory + '" created or already exists.') -Log $Log
+            Write-Log ("`t" + 'Output folder "' + $OutputDirectory + '" created or already exists.')
         }
         else
         {
@@ -143,15 +163,15 @@ function Get-OutputDirectory
             Break;
         }
     }
-    Write-Log ("`t" + 'OutputDirectory: "' + $OutputDirectory + '"') -Log $Log
-    Write-Log ('[Get-OutputDirectory]: END') -Log $Log
+    Write-Log ("`t" + 'OutputDirectory: "' + $OutputDirectory + '"')
+    Write-Log ('[Get-OutputDirectory]: END')
     Return $OutputDirectory
 }
 
 function Get-UploadNetworkShare
 {
-    param($XmlConfig, [string] $Log = $Log)
-    Write-Log ('[Get-UploadNetworkShare]: START') -Log $Log
+    param($XmlConfig)
+    Write-Log ('[Get-UploadNetworkShare]: START')
     $UploadNetworkShare = Get-XmlAttribute -XmlNode $XmlConfig -Name 'UploadNetworkShare'
     if ($UploadNetworkShare -eq '')
     {
@@ -162,7 +182,7 @@ function Get-UploadNetworkShare
         {
             Write-Console '[PopUp] Waiting for user response...' -bNoNewLine $true -bAddDateTime $false
             $sResponse = [Microsoft.VisualBasic.Interaction]::InputBox('This is the network share (\\server\share) where Clue will upload incident data and download updates. Grant the SYSTEM account of this computer read/write access to the network share. Leave blank if this is a stand-alone installation.', 'Clue tool - Network Share', '')
-            Write-Log ('UserResponse: ' + $sResponse) -Log $Log
+            Write-Log ('UserResponse: ' + $sResponse)
         }
         
         if ($sResponse -ne '')
@@ -170,16 +190,16 @@ function Get-UploadNetworkShare
             $UploadNetworkShare = $sResponse
         }
     }
-    Write-Log ("`t" + 'UploadNetworkShare: "' + $global:UploadNetworkShare + '"') -Log $Log
-    Write-Log ('[Get-UploadNetworkShare]: END') -Log $Log
+    Write-Log ("`t" + 'UploadNetworkShare: "' + $global:UploadNetworkShare + '"')
+    Write-Log ('[Get-UploadNetworkShare]: END')
     Return $UploadNetworkShare
 }
 
 Function Get-EmailForReport
 {
-    param($XmlConfig, [string] $Log = $Log)
-    Write-Log ('[Get-EmailForReport]: START') -Log $Log
-    $EmailReportTo = Get-XmlAttribute -XmlNode $XmlConfig -Name 'EmailReportTo' -Log $Log
+    param($XmlConfig)
+    Write-Log ('[Get-EmailForReport]: START')
+    $EmailReportTo = Get-XmlAttribute -XmlNode $XmlConfig -Name 'EmailReportTo'
     if ($EmailReportTo -eq '')
     {
         $sResponse = ''
@@ -187,7 +207,7 @@ Function Get-EmailForReport
         {
             Write-Console '[PopUp] Waiting for user response...' -bNoNewLine $true -bAddDateTime $false
             $sResponse = [Microsoft.VisualBasic.Interaction]::InputBox('What email addresses (separated by semi-colon (;)) do you want the report sent to?', 'Clue tool - Email report to...', '')
-            Write-Log ('UserResponse: ' + $sResponse) -Log $Log
+            Write-Log ('UserResponse: ' + $sResponse)
         }
         
         if ($sResponse -ne '')
@@ -195,45 +215,249 @@ Function Get-EmailForReport
             $EmailReportTo = $sResponse
         }
     }
-    Write-Log ("`t" + 'EmailReportTo: "' + $EmailReportTo + '"') -Log $Log
-    Write-Log ('[Get-EmailForReport]: END') -Log $Log
+    Write-Log ("`t" + 'EmailReportTo: "' + $EmailReportTo + '"')
+    Write-Log ('[Get-EmailForReport]: END')
     Return $EmailReportTo
 }
 
 Function Invoke-MyCmd
 {
-    param([string] $Cmd, [string] $Log = $Log)
-    Write-Log ($Cmd) -Log $Log
+    param([string] $Cmd)
+    Write-Log ($Cmd)
     $Output = Invoke-Expression -Command $Cmd
-    Write-Log ($Output) -Log $Log
-    Test-Error -Err $Error -Log $Log
+    Write-Log ($Output)
+    Test-Error -Err $Error
+}
+
+Function Get-TaskSchedulerService
+{
+    try
+    {
+        $oTaskSchedulerService = New-Object -ComObject 'Schedule.Service'
+        $oTaskSchedulerService.Connect()
+        Return $oTaskSchedulerService
+    }
+    catch
+    {
+        Return $null
+    }
+}
+
+Function Get-Ps2ScheduledTaskFolder
+{
+    param([string] $Path)
+
+    $oTaskSchedulerService = Get-TaskSchedulerService
+
+    if ($oTaskSchedulerService -eq $null)
+    {
+        Return $null
+    }
+
+    try
+    {
+        $oTaskSchedulerFolder = $oTaskSchedulerService.GetFolder($Path)
+    }
+    catch
+    {
+
+    }
+
+    if ($oTaskSchedulerFolder -ne $null)
+    {
+        Return $oTaskSchedulerFolder
+    }
+    
+    if ($Path.Contains('\'))
+    {
+        $aPath = $Path.Split('\',[StringSplitOptions]'RemoveEmptyEntries')
+    }
+    else
+    {
+        Return $null
+    }
+    
+    [int] $iCount = 0
+    For ($i = 0; $i -le $aPath.GetUpperBound(0); $i++)
+    {
+        [string] $sBuildPath = $sBuildPath + '\' + $aPath[$i]
+
+        try
+        {
+            Write-Log ('sBuildPath: ' + $sBuildPath)
+            $oTaskSchedulerFolder = $oTaskSchedulerService.GetFolder($sBuildPath)
+        }
+        catch
+        {
+            try
+            {
+                #// Get the parent path and create it.
+                if ($oTaskSchedulerParentFolder -ne $null)
+                {
+                    $oTaskSchedulerFolder = $oTaskSchedulerParentFolder.CreateFolder($aPath[$i])
+                }
+                else
+                {
+                    Return $null
+                }
+            }
+            catch
+            {
+                Return $null
+            }
+        }
+        finally
+        {
+            $oTaskSchedulerParentFolder = $oTaskSchedulerFolder
+        }
+        $iCount++
+    }
+
+    if ($iCount -eq $aPath.Count)
+    {
+        Return $oTaskSchedulerFolder
+    }
+    else
+    {
+        Return $null
+    }
+}
+
+Function Get-WorkingDirectoryFromTask
+{
+    param([string] $ScheduledTaskFolderPath = '\Microsoft\Windows\Clue', [string] $TaskName = 'Invoke-Rule')
+    $oTaskFolder = Get-Ps2ScheduledTaskFolder -Path $ScheduledTaskFolderPath
+    if ($oTaskFolder -eq $null)
+    {
+        Return ''
+    }
+    try {$oTask = $oTaskFolder.GetTask($TaskName)} catch {}
+    if ($oTask -eq $null)
+    {
+        Return ''
+    }
+    foreach ($oAction in $oTask.Definition.Actions)
+    {
+        [string] $WorkingDirectory = $oAction.WorkingDirectory
+        if ($WorkingDirectory.Length -gt 0)
+        {
+            Return $WorkingDirectory
+        }
+    }
+    Return ''
+}
+
+Function Remove-AllScheduledTasksInToolFolder
+{
+    $oTaskSchedulerService = Get-TaskSchedulerService
+    Test-Error -Err $Error
+
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get task folder "\Microsoft\Windows\Clue": START')
+    $oTaskSchedulerFolder = $null
+    $oParentTaskSchedulerFolder = $oTaskSchedulerService.GetFolder('\Microsoft\Windows')
+    $oFolders = $oParentTaskSchedulerFolder.GetFolders(0)
+    :FolderLoop foreach ($oFolder in $oFolders)
+    {
+        if ($oFolder.Name -eq 'Clue')
+        {
+            $oTaskSchedulerFolder = $oFolder
+            Break FolderLoop;
+        }        
+    }
+
+    if ($oTaskSchedulerFolder -eq $null)
+    {
+        Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get task folder "\Microsoft\Windows\Clue": END')
+        Return $null
+    }
+
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get task folder "\Microsoft\Windows\Clue": END')
+
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get tasks of "\Microsoft\Windows\Clue": START')
+    $oTasks = $oTaskSchedulerFolder.GetTasks(0)
+    Test-Error -Err $Error
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get tasks of "\Microsoft\Windows\Clue": END')
+
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete tasks of "\Microsoft\Windows\Clue": START')
+    ForEach ($oTask in $oTasks)
+    {
+        $oTask.Stop(0)
+        Test-Error -Err $Error
+        Start-Sleep -Seconds 2
+        Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete task "\Microsoft\Windows\Clue\' + $oTask.Name + '": START')
+        $oTaskSchedulerFolder.DeleteTask($oTask.Name, 0)
+        Test-Error -Err $Error
+        Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete task "\Microsoft\Windows\Clue\' + $oTask.Name + '": END')
+        Write-Console '.' -bNoNewLine $true -bAddDateTime $false
+    }
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete tasks of "\Microsoft\Windows\Clue": END')
+    
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get task folder "\Microsoft\Windows\Clue": START')
+    $oTaskSchedulerFolder = $oTaskSchedulerService.GetFolder('\Microsoft\Windows')
+    Test-Error -Err $Error
+    Write-Log ('[Remove-AllScheduledTasksInToolFolder] Get task folder "\Microsoft\Windows\Clue": END')
+
+    if ($oTaskSchedulerFolder -is [System.__ComObject])
+    {
+        Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete "\Microsoft\Windows\Clue": START')
+        $oTaskSchedulerFolder.DeleteFolder('Clue', 0)
+        Test-Error -Err $Error
+        Write-Log ('[Remove-AllScheduledTasksInToolFolder] Delete "\Microsoft\Windows\Clue": END')
+    }
+}
+
+function Remove-InstallationFolder
+{
+    param([string] $FolderPath)
+    if ((Test-Path -Path $FolderPath) -eq $true)
+    {
+        $oCollectionOfFilesAndFolders = Get-ChildItem $FolderPath
+        foreach ($oFileOrFolder in $oCollectionOfFilesAndFolders)
+        {
+            If ($oFileOrFolder -is [System.IO.FileInfo])
+            {
+                Remove-Item -Path $oFileOrFolder.FullName -Force
+            }
+        }
+        $oCollectionOfFilesAndFolders = Get-ChildItem $FolderPath
+        foreach ($oFileOrFolder in $oCollectionOfFilesAndFolders)
+        {
+            If ($oFileOrFolder -is [System.IO.DirectoryInfo])
+            {
+                Remove-InstallationFolder -FolderPath $oFileOrFolder.FullName
+            }
+        }
+        Remove-Item -Path $FolderPath -Recurse -Force
+    }
 }
 
 #///////////
 #// Main //
 #/////////
 
+New-Item -Path $Log -ItemType File -Force | Out-Null
+Write-Log ('[Setup]: Start')
 $Error.Clear()
-Write-Log ('[Setup]: Start') -Log $Log
-Test-Error -Err $Error -Log $Log
 
-Write-Log ('IsSilentInstallation = ' + $IsSilentInstallation.ToString()) -Log $Log
+Write-Console (Get-Location).Path
+$InvocationFolderPath = ($SCRIPT:MyInvocation.MyCommand.Path) -replace '\\_uninstall.ps1',''
+Write-Console ('InvocationFolderPath: ' + $InvocationFolderPath)
+
+[bool] $IsSilentInstallation = [System.Convert]::ToBoolean($IsSilentInstallation)
+[string] $global:ToolName = 'Clue'
+[string] $global:ScheduledTaskFolderPath = "\Microsoft\Windows\$global:ToolName"
+
+Write-Log ('IsSilentInstallation = ' + $IsSilentInstallation.ToString())
 Write-Console '//////////////////////////'
 Write-Console '// Clue tool uninstall //'
 Write-Console '////////////////////////'
 Write-Console ''
 
 #// Run OnUninstall rule
-.\Invoke-Rule.ps1 -RuleName 'OnUninstall' -Force $true -Log $Log
+#.\Invoke-Rule.ps1 -RuleName 'OnUninstall' -Force $true
 
-Remove-Module * -Force
-Import-Module .\Modules\General.psm1 -Force
-Import-Module .\Modules\Xml.psm1 -Force
-Import-Module .\Modules\FileSystem.psm1 -Force
-Import-Module .\Modules\TaskScheduler.psm1 -Force
-
-$InstallationDirectory = Get-WorkingDirectoryFromTask -Log $Log
-Test-Error -Err $Error -Log $Log
+$InstallationDirectory = Get-WorkingDirectoryFromTask
+Test-Error -Err $Error
 
 Write-Console ''
 Write-Console '/////////////////////////////'
@@ -241,22 +465,25 @@ Write-Console '// Delete scheduled tasks //'
 Write-Console '////////////////////////////'
 Write-Console ''
 Write-Console 'Deleting scheduled tasks...' -bNoNewLine $true
-Remove-AllScheduledTasksInToolFolder -Log $Log
-Test-Error -Err $Error -Log $Log
+Remove-AllScheduledTasksInToolFolder
+Test-Error -Err $Error
 Write-Console 'Done!' -bAddDateTime $false
 
 [string] $sTextFilePath = $(Get-Content env:PUBLIC) + '\Documents\ClueUserInitiated.txt'
-Remove-Item -Path $sTextFilePath -Force -ErrorAction SilentlyContinue
+if (Test-Path -Path $sTextFilePath)
+{
+    Remove-Item -Path $sTextFilePath -Force -ErrorAction SilentlyContinue
+}
 
 Write-Console ''
 Write-Console '////////////////////'
 Write-Console '// PAL Collector //'
 Write-Console '//////////////////'
 Write-Console ''
-if (Test-Path -Path '.\PalCollector\_uninstall.ps1')
+if (Test-Path -Path $InstallationDirectory\PalCollector\_uninstall.ps1)
 {
-    .\PalCollector\_uninstall.ps1 -Log $Log
-    Test-Error -Err $Error -Log $Log
+    & $InstallationDirectory\PalCollector\_uninstall.ps1 -Log $Log
+    Test-Error -Err $Error
 }
 
 Write-Console '//////////////////////////'
@@ -267,10 +494,27 @@ if ($InstallationDirectory -eq '')
     $InstallationDirectory = 'C:\ProgramData\Clue'
 }
 
-Write-Log ('[Remove-InstallationFolder]: Start') -Log $Log
-Remove-InstallationFolder -FolderPath $InstallationDirectory -Log $Log
+#// Remove the ClueUserInitiatedDataCollector.bat file
+$xUserInitiatedPath = ($env:PUBLIC + '\Desktop\ClueUserInitiatedDataCollector.bat')
+Remove-Item -Path $xUserInitiatedPath -ErrorAction SilentlyContinue
+
+Write-Log ('[Remove-InstallationFolder]: Start')
+Remove-InstallationFolder -FolderPath $InstallationDirectory
+Test-Error -Err $Error
+Write-Log ('[Remove-InstallationFolder]: End')
+
+Set-OverallProgress -Status 'Scheduled tasks...'
+Write-Console ''
+Write-Console '//////////////////'
+Write-Console '// WMI Tracing //'
+Write-Console '/////////////////'
+Write-Console ''
+Write-Console 'Disabling WMI Tracing...' -bNoNewLine $true
+[string] $sCmd = 'Wevtutil.exe sl Microsoft-Windows-WMI-Activity/Trace /e:false /q:true'
+$oOutput = Invoke-Expression -Command $sCmd
+Write-Log ($oOutput) -Log $Log
 Test-Error -Err $Error -Log $Log
-Write-Log ('[Remove-InstallationFolder]: End') -Log $Log
+Write-Console 'Done!' -bAddDateTime $false
 
 #// Finalize setup.
 Write-Console '[PopUp] Please acknowledge uninstall has finished...' -bNoNewLine $true
@@ -282,4 +526,4 @@ Write-Console '//////////'
 Write-Console ''
 Write-MsgBox $FinalMessage
 Write-Console 'Done!' -bAddDateTime $false
-Write-Log ('[Setup]: End') -Log $Log
+Write-Log ('[Setup]: End')
