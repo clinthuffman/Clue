@@ -91,17 +91,18 @@ Function Test-Numeric
 function Test-AdminRights
 {
     param([string] $Log = '.\Clue.log')
-    [string] $sLine = ''
-    $oOutput = Invoke-Expression -Command 'logman create counter AdminTest1234 -c "\Processor(*)\% Processor Time"'
-    foreach ($sLine in $oOutput)
+
+    $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
+
+    if ($isAdmin)
     {
-        if ($sLine.Contains('command completed successfully'))
-        {
-            $oOutput = Invoke-Expression -Command 'logman delete AdminTest1234'
-            Return $true
-        }
+        Write-Log ('[Test-AdminRights] User has administrator rights') -Log $Log
     }
-    Return $false
+    else
+    {
+         Write-Log ('[Test-AdminRights] User does not have administrator rights') -Log $Log
+    }
+    return $isAdmin
 }
 
 Function Test-OSCompatibility
